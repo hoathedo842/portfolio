@@ -35,7 +35,7 @@ const userSchema = new mongoose.Schema(
       // 0: superAdmin; 1: admin; 2: user; 3: guest
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const User = mongoose.model('User', userSchema);
