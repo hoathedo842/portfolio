@@ -5,6 +5,7 @@ import bcrypt from 'bcryptjs';
 import path from 'path';
 import xlsx from 'xlsx';
 import fs from 'fs';
+import { v2 as cloudinary } from 'cloudinary';
 
 const getAdminDashboard = async (req, res) => {
   try {
@@ -103,7 +104,9 @@ const getProjectsPage = async (req, res) => {
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
-        .select('title tech description live github createdAt updatedAt')
+        .select(
+          'title tech description live github createdAt updatedAt imageUrl',
+        )
         .lean(),
       Project.countDocuments(queryObj),
     ]);
@@ -504,26 +507,41 @@ const deleteUser = async (req, res) => {
 const createProject = async (req, res) => {
   try {
     const { title, tech, description, live, github } = req.body;
+    let imageUrl = '';
 
-    const newProject = new Project({
+    // 1. Handle image upload if a file is provided
+    if (req.file) {
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: 'projects',
+      });
+      imageUrl = result.secure_url;
+
+      // Cleanup local temp file
+      fs.unlinkSync(req.file.path);
+    }
+
+    // 2. Create and save project record
+    const newProject = await Project.create({
       title,
       tech,
       description,
       live,
       github,
+      imageUrl: imageUrl,
     });
 
-    await newProject.save();
-
-    console.log(
-      `Created new project "${title}" by ${req.session.user.username}`,
-    );
+    console.log(`Project "${title}" created by ${req.session.user.username}`);
 
     return res.redirect('/api/v1/admin/projects');
   } catch (error) {
-    console.error('Error creating project:', error.message);
+    // 3. Robust error handling and cleanup
+    if (req.file && fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path);
+    }
+
+    console.error('Project creation failed:', error.message);
     return res.status(500).render('error', {
-      message: 'Internal Server Error',
+      message: 'Failed to create project',
       error,
     });
   }
@@ -558,38 +576,88 @@ const getProjectById = async (req, res) => {
 };
 
 const updateProject = async (req, res) => {
+  // try {
+  //   const { id } = req.params;
+  //   const { title, tech, description, live, github } = req.body;
+
+  //   const updatedProject = await Project.findByIdAndUpdate(
+  //     id,
+  //     {
+  //       title,
+  //       tech,
+  //       description: description
+  //         .split('\n')
+  //         .map((desc) => desc.trim())
+  //         .filter((desc) => desc),
+  //       live,
+  //       github,
+  //     },
+  //     { new: true },
+  //   );
+
+  //   if (!updatedProject) {
+  //     return res.status(404).render('error', {
+  //       message: 'Project not found.',
+  //     });
+  //   }
+
+  //   console.log(`Updated project ${id} by ${req.session.user.username}`);
+
+  //   return res.redirect('/api/v1/admin/projects');
+  // } catch (error) {
+  //   console.error('Error updating project:', error.message);
+  //   return res.status(500).render('error', {
+  //     message: 'Internal Server Error',
+  //     error,
+  //   });
+  // }
   try {
     const { id } = req.params;
-    const { title, tech, description, live, github } = req.body;
+    const { title, tech, live, github, description } = req.body;
 
+    // 1. Prepare update data
+    const updateData = { title, tech, live, github };
+
+    if (description) {
+      updateData.description = description
+        .split('\n')
+        .map((d) => d.trim())
+        .filter((d) => d);
+    }
+
+    // 2. Handle image update with Cloudinary
+    if (req.file) {
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: 'projects',
+      });
+      updateData.imageUrl = result.secure_url;
+
+      // Remove temp file
+      fs.unlinkSync(req.file.path);
+    }
+
+    // 3. Update database
     const updatedProject = await Project.findByIdAndUpdate(
       id,
-      {
-        title,
-        tech,
-        description: description
-          .split('\n')
-          .map((desc) => desc.trim())
-          .filter((desc) => desc),
-        live,
-        github,
-      },
-      { new: true },
+      { $set: updateData },
+      { new: true, runValidators: true },
     );
 
     if (!updatedProject) {
-      return res.status(404).render('error', {
-        message: 'Project not found.',
-      });
+      return res.status(404).render('error', { message: 'Project not found' });
     }
 
-    console.log(`Updated project ${id} by ${req.session.user.username}`);
-
+    console.log(`Project ${id} updated by ${req.session.user.username}`);
     return res.redirect('/api/v1/admin/projects');
   } catch (error) {
-    console.error('Error updating project:', error.message);
+    // Cleanup if upload failed
+    if (req.file && fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path);
+    }
+
+    console.error('Update failed:', error.message);
     return res.status(500).render('error', {
-      message: 'Internal Server Error',
+      message: 'Failed to update project',
       error,
     });
   }

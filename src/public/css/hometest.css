@@ -1,0 +1,15 @@
+.logo {
+  margin-bottom: 20px;
+}
+
+.top-bar {
+  /* layout */
+  display: flex;
+  padding-left: 16px;
+  height: 41px;
+  /* text */
+  color: aqua;
+  /* appearance */
+  background-color: black;
+  /* other */
+}

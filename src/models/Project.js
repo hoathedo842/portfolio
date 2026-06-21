@@ -18,6 +18,11 @@ const projectSchema = new mongoose.Schema(
       trim: true,
       default: [],
     },
+    imageUrl: {
+      type: String,
+      trim: true,
+      default: '',
+    },
     live: {
       type: String,
       trim: true,

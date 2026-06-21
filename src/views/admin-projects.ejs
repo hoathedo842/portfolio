@@ -104,6 +104,7 @@
                 <form
                   action="/api/v1/admin/projects"
                   method="post"
+                  enctype="multipart/form-data"
                   class="row g-3"
                 >
                   <div class="col-md-4">
@@ -131,6 +132,14 @@
                       class="form-control"
                       placeholder="Description"
                       required
+                    />
+                  </div>
+                  <div class="col-md-4">
+                    <input
+                      type="file"
+                      name="product_image" 
+                      class="form-control"
+                      accept="image/*"
                     />
                   </div>
                   <div class="col-md-4">
@@ -193,6 +202,7 @@
                     <thead class="table-dark">
                       <tr>
                         <th>#</th>
+                        <th>Image</th>
                         <th>Title</th>
                         <th>Tech Stack</th>
                         <th>Description</th>
@@ -207,6 +217,16 @@
                       <% projects.forEach((project, index) => { %>
                       <tr>
                         <td><%= index + 1 + (currentPage - 1) * 10 %></td>
+                        <td>
+                          <% if (project.imageUrl) { %>
+                            <img
+                              src="<%= project.imageUrl%>"
+                              alt="<%= project.title %>"
+                              width="100"
+                              class="img-thumbnail"
+                            >
+                          <% } %>
+                        </td>
                         <td><%= project.title %></td>
                         <td><%= project.tech %></td>
                         <td>

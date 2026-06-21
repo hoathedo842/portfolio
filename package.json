@@ -7,13 +7,18 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "node build",
     "start": "node ./src/server.js",
-    "dev": "nodemon ./src/server.js"
+    "dev:server": "nodemon ./src/server.js",
+    "dev:browser": "node browser-sync.js",
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:browser\""
   },
   "author": "Do The Hoa",
   "license": "ISC",
   "description": "",
   "dependencies": {
     "bcryptjs": "^3.0.2",
+    "bootstrap": "^5.3.8",
+    "bootstrap-icons": "^1.13.1",
+    "cloudinary": "^2.10.0",
     "connect-flash": "^0.1.1",
     "connect-mongo": "^5.1.0",
     "csrf": "^3.1.0",
@@ -28,9 +33,12 @@
     "mongoose": "^8.15.0",
     "multer": "^2.0.1",
     "mysql2": "^3.14.1",
+    "sweetalert2": "^11.26.25",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "browser-sync": "^3.0.4",
+    "concurrently": "^10.0.3",
     "nodemon": "^3.1.9"
   }
 }

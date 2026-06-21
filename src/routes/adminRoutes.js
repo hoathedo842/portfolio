@@ -115,6 +115,7 @@ router.post(
   '/projects',
   auth.authSignin,
   auth.checkSuperAdmin,
+  upload.single('image'),
   adminController.createProject,
 );
 
@@ -129,6 +130,7 @@ router.put(
   '/projects/:id',
   auth.authSignin,
   auth.checkSuperAdmin,
+  upload.single('image'),
   adminController.updateProject,
 );
 

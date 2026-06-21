@@ -1,0 +1,32 @@
+/* Styles for the compact image preview and interaction */
+#previewImg {
+  max-width: 150px;
+  max-height: 150px;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.img-wrapper {
+  display: inline-block;
+  position: relative;
+}
+
+.img-big {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  justify-content: center;
+  align-items: center;
+  z-index: 1050;
+  cursor: pointer;
+
+  .img-big img {
+    max-width: 90%;
+    max-height: 90%;
+    border: 2px solid white;
+  }
+}

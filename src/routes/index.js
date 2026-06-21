@@ -1,7 +1,7 @@
-import authRouter from '../routes/authRoutes.js';
-import adminRouter from '../routes/adminRoutes.js';
-import homeRouter from '../routes/homeRoutes.js';
-import userRouter from '../routes/userRoutes.js';
+import authRouter from './authRoutes.js';
+import adminRouter from './adminRoutes.js';
+import homeRouter from './homeRoutes.js';
+import userRouter from './userRoutes.js';
 
 const applyRoutes = (app) => {
   app.use('/', homeRouter);
