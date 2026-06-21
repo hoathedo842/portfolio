@@ -215,7 +215,6 @@ const getUserVocabularies = async (req, res) => {
     const currentUser = req.session.user;
     const userId = req.params.id;
 
-    // Tìm user trước
     const user = await User.findById(userId).select('username').lean();
 
     if (!user) {
@@ -224,7 +223,6 @@ const getUserVocabularies = async (req, res) => {
       });
     }
 
-    // Lấy vocabularies của user đó
     const vocabularies = await Vocabulary.find({ createdBy: userId })
       .sort({ createdAt: -1 })
       .lean();
@@ -576,41 +574,6 @@ const getProjectById = async (req, res) => {
 };
 
 const updateProject = async (req, res) => {
-  // try {
-  //   const { id } = req.params;
-  //   const { title, tech, description, live, github } = req.body;
-
-  //   const updatedProject = await Project.findByIdAndUpdate(
-  //     id,
-  //     {
-  //       title,
-  //       tech,
-  //       description: description
-  //         .split('\n')
-  //         .map((desc) => desc.trim())
-  //         .filter((desc) => desc),
-  //       live,
-  //       github,
-  //     },
-  //     { new: true },
-  //   );
-
-  //   if (!updatedProject) {
-  //     return res.status(404).render('error', {
-  //       message: 'Project not found.',
-  //     });
-  //   }
-
-  //   console.log(`Updated project ${id} by ${req.session.user.username}`);
-
-  //   return res.redirect('/api/v1/admin/projects');
-  // } catch (error) {
-  //   console.error('Error updating project:', error.message);
-  //   return res.status(500).render('error', {
-  //     message: 'Internal Server Error',
-  //     error,
-  //   });
-  // }
   try {
     const { id } = req.params;
     const { title, tech, live, github, description } = req.body;
@@ -648,7 +611,7 @@ const updateProject = async (req, res) => {
     }
 
     console.log(`Project ${id} updated by ${req.session.user.username}`);
-    return res.redirect('/api/v1/admin/projects');
+    return res.redirect('/api/v1/admin/projects?success=true');
   } catch (error) {
     // Cleanup if upload failed
     if (req.file && fs.existsSync(req.file.path)) {
@@ -877,7 +840,6 @@ const importVocab = async (req, res) => {
       Examples: 'examples',
     };
 
-    // Chuẩn hóa key + map về schema field
     const normalizedData = data.map((item) => {
       const obj = {};
       for (let key in item) {

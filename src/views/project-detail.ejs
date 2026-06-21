@@ -12,13 +12,10 @@
 
     <!-- AOS Animation CSS -->
     <link rel="stylesheet" href="/css/aos.css" />
-
+    <link rel="stylesheet" href="/css/sweetalert2.min.css" />
     <!-- Custom CSS -->
-    <!-- <link rel="stylesheet" href="/css/project-detail.css" /> -->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
-    />
+    <link rel="stylesheet" href="/css/project-detail.css" />
+
     <style></style>
   </head>
   <body>
@@ -137,47 +134,8 @@
       </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-      const imageInput = document.getElementById('imageInput');
-      const previewImg = document.getElementById('previewImg');
-      const bigPreviewImg = document.getElementById('bigPreviewImg');
-      const imgBig = document.getElementById('imgBig');
-      const form = document.getElementById('projectForm');
-      const submitBtn = document.getElementById('submitBtn');
-
-      // Efficiently toggle the full-screen large image view
-      function toggleLargeImage() {
-        if (imgBig.style.display === 'flex') {
-          imgBig.style.display = 'none';
-        } else {
-          imgBig.style.display = 'flex';
-        }
-      }
-
-      // Live-update both compact and full-size previews on image selection
-      imageInput.addEventListener('change', function () {
-        const file = this.files[0];
-        if (file) {
-          const newUrl = URL.createObjectURL(file);
-          previewImg.src = newUrl;
-          bigPreviewImg.src = newUrl;
-        }
-      });
-
-      // Submit feedback and UI lock
-      form.addEventListener('submit', function () {
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = 'Updating...';
-        Swal.fire({
-          icon: 'success',
-          title: 'Saving Changes',
-          text: 'Your project is being updated...',
-          showConfirmButton: false,
-          timer: 2000,
-        });
-      });
-    </script>
+    <script src="/js/sweetalert2@11.js"></script>
     <script src="/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/project-detail.js"></script>
   </body>
 </html>
