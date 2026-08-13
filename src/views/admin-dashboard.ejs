@@ -11,6 +11,9 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css" />
 
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="/font/bootstrap-icons.min.css" />
+
     <!-- AOS Animation CSS -->
     <link rel="stylesheet" href="/css/aos.css" />
 
@@ -54,6 +57,9 @@
             id="accountMenu"
             style="display: none"
           >
+            <a class="dropdown-item" href="/api/v1/admin/portfolio">
+              <i class="bi bi-file-earmark-person me-2"></i> Portfolio Data
+            </a>
             <a class="dropdown-item" href="/api/v1/admin/users/profile">
               Update Info
             </a>
@@ -72,19 +78,25 @@
     >
       <ul class="nav flex-column px-3 pt-4">
         <li class="nav-item">
-          <a class="nav-link" href="/api/v1/admin/dashboard">🏠 Dashboard</a>
+          <a class="nav-link active" href="/api/v1/admin/dashboard">Dashboard</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/api/v1/admin/users">👥 User Management</a>
+          <a class="nav-link" href="/api/v1/admin/users">User Management</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/api/v1/admin/projects">📁 Projects</a>
+          <a class="nav-link" href="/api/v1/admin/projects">Projects</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/api/v1/admin/dictionary">📚 Dictionary</a>
+          <a class="nav-link" href="/api/v1/admin/dictionary">Dictionary</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/api/v1/admin/statistics">📈 Statistics</a>
+          <a class="nav-link" href="/api/v1/admin/portfolio">Portfolio Data</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/api/v1/admin/contact">Contact Messages</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/api/v1/admin/statistics">Statistics</a>
         </li>
       </ul>
     </nav>

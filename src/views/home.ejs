@@ -3,18 +3,30 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Hoa The Do - Portfolio</title>
+  <title><%= portfolioData && portfolioData.about ? portfolioData.about.name + " - Portfolio" : "Portfolio" %></title>
+  
+  <!-- CSS Styles -->
   <link rel="stylesheet" href="/css/reset.css" />
   <link rel="stylesheet" href="/css/bootstrap.min.css" />
   <link rel="stylesheet" href="/css/aos.css" />
   <link rel="stylesheet" href="/font/bootstrap-icons.min.css" />
   <link rel="stylesheet" href="/css/home.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css"/>
+  
+  <style>
+    .iti { width: 100%; }
+    .iti__flag { background-image: url("https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/img/flags.png"); }
+    @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+      .iti__flag { background-image: url("https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/img/flags@2x.png"); }
+    }
+  </style>
 </head>
 
 <body>
+  <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top shadow-sm navbar-custom">
     <div class="container">
-      <a class="navbar-brand fw-bold" href="#">Hoa Do</a>
+      <a class="navbar-brand fw-bold" href="#"><%= portfolioData?.about?.name || "Portfolio" %></a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -30,109 +42,102 @@
     </div>
   </nav>
 
+  <!-- About Section -->
   <section id="about" class="py-5 bg-white section-about" data-aos="fade-up">
     <div class="container py-4">
       <div class="row justify-content-center">
         <div class="col-lg-8 text-center">
-          <h1 class="display-4 fw-bold mb-3">Hoa Do</h1>
+          <h1 class="display-4 fw-bold mb-3"><%= portfolioData?.about?.title || "" %></h1>
+          
           <div class="d-flex flex-wrap justify-content-center gap-4 mb-4">
-            <a href="mailto:hoathedo842@gmail.com" class="text-decoration-none text-dark d-flex align-items-center">
-              <i class="bi bi-envelope-fill text-primary me-2"></i> hoathedo842@gmail.com
-            </a>
-            <a href="https://github.com/hoathedo842" target="_blank" class="text-decoration-none text-dark d-flex align-items-center">
-              <i class="bi bi-github text-dark me-2"></i> GitHub
-            </a>
-            <a href="https://www.linkedin.com/in/hoa-do-3b15013ba/" target="_blank" class="text-decoration-none text-dark d-flex align-items-center">
-              <i class="bi bi-linkedin text-primary me-2"></i> LinkedIn
-            </a>
+            <% if (portfolioData?.contact?.email) { %>
+              <a href="mailto:<%= portfolioData.contact.email %>" class="text-decoration-none text-dark d-flex align-items-center">
+                <i class="bi bi-envelope-fill text-primary me-2"></i> <%= portfolioData.contact.email %>
+              </a>
+            <% } %>
+            <% if (portfolioData?.contact?.socialLinks) { %>
+              <% portfolioData.contact.socialLinks.forEach(link => { %>
+                <a href="<%= link.url %>" target="_blank" class="text-decoration-none text-dark d-flex align-items-center">
+                  <% if (link.name.toLowerCase().includes('github')) { %><i class="bi bi-github text-dark me-2"></i><% } 
+                     else if (link.name.toLowerCase().includes('linkedin')) { %><i class="bi bi-linkedin text-primary me-2"></i><% } 
+                     else { %><i class="bi bi-link-45deg text-dark me-2"></i><% } %>
+                  <%= link.name %>
+                </a>
+              <% }) %>
+            <% } %>
           </div>
+
           <hr class="my-4 w-50 mx-auto" />
-          <p class="text-secondary mb-4">Hi, I'm Hoa. I focus on web development and database management.</p>
-          <div class="p-3"><i class="bi bi-mortarboard-fill text-warning me-2"></i> <strong>Education:</strong> Industrial University of Ho Chi Minh City</div>
+          <p class="text-secondary mb-4"><%= portfolioData?.about?.description || "" %></p>
+          
+          <div class="p-3"><i class="bi bi-mortarboard-fill text-warning me-2"></i> <strong>Education:</strong> <%= portfolioData?.about?.education || "" %></div>
         </div>
       </div>
     </div>
   </section>
 
+  <!-- Projects Section -->
   <section id="projects" class="py-5 bg-light section-projects" data-aos="fade-right">
     <div class="container">
       <h2 class="text-center mb-4">📁 Projects</h2>
       <div class="row g-4">
-        <% dataList.forEach(project => { %>
-        <div class="col-12 col-md-6 col-lg-4">
-          <div class="card h-100 shadow-sm">
-            <% if (project.imageUrl) { %>
-              <img src="<%= project.imageUrl %>" class="card-img-top" alt="<%= project.title %>" style="height: 200px; object-fit: cover;">
-            <% } %>
-            
-            <div class="card-body d-flex flex-column">
-              <h5 class="card-title text-primary fw-bold"><%= project.title %></h5>
-              <p class="small"><strong>Tech:</strong> <span class="text-muted"><%= project.tech %></span></p>
-              
-              <% if (project.description && project.description.length > 0) { %>
-                <ul class="small text-secondary ps-3">
-                  <% project.description.forEach(desc => { %>
-                    <li><%= desc %></li>
-                  <% }) %>
-                </ul>
-              <% } %>
-            </div>
-
-            <div class="card-footer bg-transparent border-top-0 d-flex gap-3">
-              <% if (project.live) { %><a href="<%= project.live %>" target="_blank" class="btn btn-sm btn-outline-primary">🌐 Live</a><% } %>
-              <% if (project.github) { %><a href="<%= project.github %>" target="_blank" class="btn btn-sm btn-outline-dark">🔗 GitHub</a><% } %>
+        <% if (locals.projectList) { projectList.forEach(project => { %>
+          <div class="col-12 col-md-6 col-lg-4">
+            <div class="card h-100 shadow-sm">
+              <% if (project.imageUrl) { %><img src="<%= project.imageUrl %>" class="card-img-top" alt="<%= project.title %>" style="height: 200px; object-fit: cover;"><% } %>
+              <div class="card-body d-flex flex-column">
+                <h5 class="card-title text-primary fw-bold"><%= project.title %></h5>
+                <p class="small"><strong>Tech:</strong> <span class="text-muted"><%= project.tech %></span></p>
+                <% if (project.description) { %>
+                  <ul class="small text-secondary ps-3">
+                    <% project.description.forEach(desc => { %><li><%= desc %></li><% }) %>
+                  </ul>
+                <% } %>
+              </div>
+              <div class="card-footer bg-transparent border-top-0 d-flex gap-3">
+                <% if (project.live) { %><a href="<%= project.live %>" target="_blank" class="btn btn-sm btn-outline-primary">🌐 Live</a><% } %>
+                <% if (project.github) { %><a href="<%= project.github %>" target="_blank" class="btn btn-sm btn-outline-dark">🔗 GitHub</a><% } %>
+              </div>
             </div>
           </div>
-        </div>
-        <% }) %>
+        <% }) } %>
       </div>
     </div>
   </section>
+
+  <!-- Skills Section -->
   <section id="skills" class="py-5 section-skills" data-aos="fade-right">
     <div class="container">
       <h2 class="text-center mb-5 fw-bold">Skills</h2>
-      
       <div class="row justify-content-center">
         <div class="col-12 col-md-10 col-lg-8">
-          
           <div class="row">
-            <div class="col-12 col-md-6">
+            <% if (portfolioData?.skills) { portfolioData.skills.forEach(skill => { %>
+                <div class="col-12 col-md-6">
+                  <ul class="list-unstyled">
+                    <li class="mb-3"><strong><%= skill.category %>:</strong> <%= skill.items.join(', ') %></li>
+                  </ul>
+                </div>
+            <% }) } %>
+            <div class="col-12">
               <ul class="list-unstyled">
-               <li class="mb-3">
-                 <strong>Core Backend:</strong>Java, Javascript(Node.js), Express.js (RESTful APIs)
-               </li>
-              <li class="mb-3">
-                <strong>Authentication:</strong> JWT, Session/Cookie Auth
-              </li>
-              <li class="mb-3">
-                <strong>Frontend & UI:</strong> HTML, CSS, EJS, Bootstrap
-              </li>
-              <li class="mb-3">
-                <strong>Architecture:</strong> MVC Pattern, OOP, Real-time (WebSocket)
-              </li>
-              </ul>
-            </div>
-
-            <div class="col-12 col-md-6">
-              <ul class="list-unstyled">
-                <li class="mb-3"><strong>Databases:</strong> MySQL, SQL Server, MongoDB</li>
-                <li class="mb-3"><strong>ORM/ODM:</strong> Sequelize, Mongoose</li>
-                <li class="mb-3"><strong>Tools:</strong> GitHub, Postman, Jupyter Notebook</li>
-                <li class="mb-3"><strong>Interests:</strong> Soccer, video games, music</li>
+                <li class="mb-3"><strong>Interests:</strong> <%= portfolioData?.interests ? portfolioData.interests.join(', ') : '' %></li>
               </ul>
             </div>
           </div>
-
         </div>
       </div>
     </div>
   </section>
+
+  <!-- Contact Section -->
   <section id="contact" class="py-5 bg-light section-contact" data-aos="zoom-in">
     <div class="container">
       <div class="row justify-content-center">
         <div class="col-lg-6">
           <h2 class="text-center mb-4">📧 Get In Touch</h2>
-          <form action="https://formspree.io/f/mwvdebed" method="post">
+          
+          <form id="contactForm">
             <div class="mb-3">
               <label class="form-label">Name</label>
               <input type="text" name="name" class="form-control" placeholder="Your name" required>
@@ -143,34 +148,31 @@
             </div>
             <div class="mb-3">
               <label class="form-label fw-semibold">Phone Number <span class="text-muted small">(Optional)</span></label>
-              <div class="input-group shadow-sm align-items-center">
-                <select name="country_code" class="form-select border-end-0 bg-light" style="max-width: 120px; height: 38px;" onchange="document.getElementById('other-code').hidden = (this.value !== 'other')">
-                  <option value="+84">🇻🇳 +84</option>
-                  <option value="+1">🇺🇸 +1</option>
-                  <option value="+81">🇯🇵 +81</option>
-                  <option value="other">Other</option>
-                </select>
-                <input type="text" id="other-code" name="other_code" class="form-control border-end-0" style="max-width: 80px; height: 38px;" placeholder="+XX" hidden>
-                <input type="tel" name="phone" class="form-control border-start-0 ps-3" style="height: 38px;" placeholder="909 123 456">
-              </div>
+              <input type="tel" id="phone" name="phone" class="form-control shadow-sm">
             </div>
             <div class="mb-3">
               <label class="form-label">Message</label>
               <textarea name="message" class="form-control" rows="4" required></textarea>
             </div>
-            <button type="submit" class="btn btn-primary w-100">Send Message</button>
+            <button type="submit" id="submitBtn" class="btn btn-primary w-100">Send Message</button>
+            <div id="formResponse" class="mt-3 text-center fw-semibold"></div>
           </form>
         </div>
       </div>
     </div>
   </section>
 
+  <!-- Footer -->
   <footer class="text-center py-3 border-top bg-white footer-custom">
-    <p class="mb-0">&copy; 2026 Hoa Do. All rights reserved.</p>
+    <p class="mb-0">&copy; 2026 <%= portfolioData?.about?.name || "Portfolio" %>. All rights reserved.</p>
   </footer>
 
+  <!-- Scripts -->
   <script src="/js/bootstrap.bundle.min.js"></script>
   <script src="/js/aos.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
   <script>AOS.init();</script>
+  <!-- External Contact Logic Script -->
+  <script src="/js/contact.js"></script>
 </body>
 </html>

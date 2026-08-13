@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Portfolio Management - Admin Dashboard</title>
+
+    <!-- Reset CSS -->
+    <link rel="stylesheet" href="/css/reset.css" />
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css" />
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="/font/bootstrap-icons.min.css" />
+
+    <!-- AOS Animation CSS -->
+    <link rel="stylesheet" href="/css/aos.css" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/admin-dashboard.css" />
+  </head>
+
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top navbar-custom">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">Admin Panel</a>
+
+        <!-- Toggle Button for mobile sidebar -->
+        <button
+          class="btn btn-outline-light d-lg-none"
+          type="button"
+          id="sidebarToggle"
+        >
+          ☰
+        </button>
+
+        <!-- Welcome + Account Menu -->
+        <div class="ms-auto d-flex align-items-center gap-3 position-relative">
+          <div class="text-white fw-semibold d-none d-sm-block">
+            Welcome, <%= currentUser.username %>
+          </div>
+
+          <!-- Account Button -->
+          <button
+            id="accountToggle"
+            class="btn btn-outline-light btn-sm account-toggle"
+            style="min-width: 90px"
+          >
+            Account
+          </button>
+
+          <!-- Custom Menu -->
+          <div
+            class="account-menu position-absolute"
+            id="accountMenu"
+            style="display: none"
+          >
+            <a class="dropdown-item" href="/api/v1/admin/portfolio">
+              <i class="bi bi-file-earmark-person me-2"></i> Portfolio Data
+            </a>
+            <a class="dropdown-item" href="/api/v1/admin/users/profile">
+              Update Info
+            </a>
+            <form action="/api/v1/auth/signout" method="POST" class="mb-0">
+              <button type="submit" class="dropdown-item">Sign Out</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <nav
+      id="sidebarMenu"
+      class="sidebar-custom sidebar-fixed sidebar-slide d-lg-block"
+    >
+      <ul class="nav flex-column px-3 pt-4">
+        <li class="nav-item">
+          <a class="nav-link" href="/api/v1/admin/dashboard">Dashboard</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/api/v1/admin/users">User Management</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/api/v1/admin/projects">Projects</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/api/v1/admin/dictionary">Dictionary</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active fw-bold text-white" href="/api/v1/admin/portfolio">Portfolio Data</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/api/v1/admin/statistics">Statistics</a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content-fixed">
+      <div class="container-fluid pt-5">
+        
+        <!-- Header Actions -->
+        <div class="d-flex justify-content-between align-items-center mb-4 pt-4">
+          <div>
+            <a href="/api/v1/admin/dashboard" class="btn btn-outline-secondary btn-sm mb-2">
+              <i class="bi bi-arrow-left"></i> Back to Dashboard
+            </a>
+            <h2 class="fw-bold text-secondary mb-0">Portfolio Overview</h2>
+          </div>
+          <div class="d-flex gap-2">
+            <a href="/" target="_blank" class="btn btn-outline-dark">View Live Site</a>
+            <a href="/api/v1/admin/portfolio/edit" class="btn btn-primary">Edit Portfolio</a>
+          </div>
+        </div>
+
+        <div class="row g-4 pb-5">
+          
+          <!-- About Section -->
+          <div class="col-lg-6">
+            <div class="card shadow-sm border-0 h-100">
+              <div class="card-body">
+                <h4 class="card-title text-primary mb-3">👤 About Information</h4>
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item px-0">
+                    <strong>Title:</strong> <span class="text-muted"><%= portfolio?.about?.title || '' %></span>
+                  </li>
+                  <li class="list-group-item px-0">
+                    <strong>Description:</strong> <p class="text-muted mb-0 mt-1"><%= portfolio?.about?.description || '' %></p>
+                  </li>
+                  <li class="list-group-item px-0">
+                    <strong>Education:</strong> <span class="text-muted"><%= portfolio?.about?.education || '' %></span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Contact Section -->
+          <div class="col-lg-6">
+            <div class="card shadow-sm border-0 h-100">
+              <div class="card-body">
+                <h4 class="card-title text-primary mb-3">📞 Contact & Socials</h4>
+                <ul class="list-group list-group-flush mb-3">
+                  <li class="list-group-item px-0">
+                    <strong>Email:</strong> <span class="text-muted"><%= portfolio?.contact?.email || '' %></span>
+                  </li>
+                  <li class="list-group-item px-0">
+                    <strong>Phone:</strong> <span class="text-muted"><%= portfolio?.contact?.phone || 'N/A' %></span>
+                  </li>
+                </ul>
+                <h6 class="fw-semibold text-dark mt-3">Social Links:</h6>
+                <div class="d-flex flex-wrap gap-2">
+                  <% if (portfolio?.contact?.socialLinks) { %>
+                    <% portfolio.contact.socialLinks.forEach(link => { %>
+                      <a href="<%= link.url %>" target="_blank" class="btn btn-outline-dark btn-sm">
+                        <i class="bi bi-link-45deg"></i> <%= link.name %>
+                      </a>
+                    <% }); %>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Skills Section -->
+          <div class="col-lg-6">
+            <div class="card shadow-sm border-0 h-100">
+              <div class="card-body">
+                <h4 class="card-title text-primary mb-3">🛠️ Skills</h4>
+                <% if (portfolio?.skills) { %>
+                  <% portfolio.skills.forEach(skillGroup => { %>
+                    <div class="mb-3">
+                      <h6 class="fw-bold text-dark"><%= skillGroup.category %></h6>
+                      <div class="d-flex flex-wrap gap-1">
+                        <% skillGroup.items.forEach(item => { %>
+                          <span class="badge bg-secondary"><%= item %></span>
+                        <% }); %>
+                      </div>
+                    </div>
+                  <% }); %>
+                <% } %>
+              </div>
+            </div>
+          </div>
+
+          <!-- Interests Section -->
+          <div class="col-lg-6">
+            <div class="card shadow-sm border-0 h-100">
+              <div class="card-body">
+                <h4 class="card-title text-primary mb-3">🎯 Interests</h4>
+                <div class="d-flex flex-wrap gap-2">
+                  <% if (portfolio?.interests) { %>
+                    <% portfolio.interests.forEach(interest => { %>
+                      <span class="badge bg-primary px-3 py-2 fs-6"><%= interest %></span>
+                    <% }); %>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </main>
+
+    <!-- JS -->
+    <script src="/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/admin-dashboard.js"></script>
+  </body>
+</html>

@@ -2,51 +2,165 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vocabularies - Admin</title>
-    <link rel="stylesheet" href="/css/admin.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-    />
-  </head>
-  <body>
-    <div class="container mt-4">
-      <h1>User Vocabularies</h1>
-      <% if (vocabularies.length === 0) { %>
-      <div class="alert alert-info">No vocabularies found for this user.</div>
-      <% } else { %>
-      <table class="table table-bordered">
-        <thead class="table-light">
-          <tr>
-            <th>Word</th>
-            <th>Meaning</th>
-            <th>Part of Speech</th>
-            <th>Pronunciation</th>
-            <th>Example</th>
-            <th>Created At</th>
-            <th>Updated At</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% vocabularies.forEach(vocab => { %>
-          <tr>
-            <td><%= vocab.word %></td>
-            <td><%= vocab.meaning %></td>
-            <td><%= vocab.partOfSpeech %></td>
-            <td><%= vocab.pronunciation %></td>
-            <td><%= vocab.examples && vocab.examples[0] %></td>
-            <td><%= vocab.createdAt.toLocaleDateString() %></td>
-            <td><%= vocab.updatedAt.toLocaleDateString() %></td>
-          </tr>
-          <% }) %>
-        </tbody>
-      </table>
-      <% } %>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>User Vocabularies - Admin</title>
 
-      <a href="/api/v1/admin/users" class="btn btn-secondary mt-3"
-        >Back to Dashboard</a
-      >
+    <!-- Reset CSS -->
+    <link rel="stylesheet" href="/css/reset.css" />
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css" />
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="/font/bootstrap-icons.min.css" />
+
+    <!-- Plugin CSS (AOS) -->
+    <link rel="stylesheet" href="/css/aos.css" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/admin-users.css" />
+  </head>
+
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-dark bg-dark fixed-top custom-navbar">
+      <div class="container-fluid">
+        <button
+          class="navbar-toggler d-md-none"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#sidebarMenu"
+          aria-controls="sidebarMenu"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <span class="navbar-brand">Admin Panel</span>
+        <div class="d-flex align-items-center gap-2">
+          <span class="text-white d-none d-sm-inline">
+            Welcome, <%= currentUser.username %> (<%= currentUser.firstName %> <%= currentUser.lastName %>)
+          </span>
+          <a
+            href="/api/v1/admin/portfolio"
+            class="btn btn-outline-warning btn-sm"
+          >
+            📁 Portfolio
+          </a>
+          <a
+            href="/api/v1/admin/users/profile"
+            class="btn btn-outline-light btn-sm"
+          >
+            Update Info
+          </a>
+          <form action="/api/v1/auth/signout" method="POST" class="mb-0">
+            <button type="submit" class="btn btn-outline-light btn-sm">
+              Sign Out
+            </button>
+          </form>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row">
+        <!-- Sidebar -->
+        <nav
+          id="sidebarMenu"
+          class="col-md-3 col-lg-2 d-md-block sidebar collapse pt-5 custom-sidebar"
+        >
+          <div class="position-sticky">
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a class="nav-link" href="/api/v1/admin/dashboard"
+                  >🏠 Dashboard</a
+                >
+              </li>
+              <li class="nav-item">
+                <a class="nav-link active" href="/api/v1/admin/users"
+                  >👥 User Management</a
+                >
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/api/v1/admin/projects"
+                  >📁 Projects</a
+                >
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/api/v1/admin/dictionary"
+                  >📚 Dictionary</a
+                >
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/api/v1/admin/portfolio"
+                  >⚙️ Portfolio Data</a
+                >
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/api/v1/admin/statistics"
+                  >📈 Statistics</a
+                >
+              </li>
+            </ul>
+          </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 pt-5">
+          <div class="pt-3">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <h2>User Vocabularies</h2>
+              <a href="/api/v1/admin/users" class="btn btn-secondary btn-sm">
+                ⬅ Back to User List
+              </a>
+            </div>
+
+            <!-- Vocabulary Table Card -->
+            <div class="card mb-4 custom-card">
+              <div class="card-header">Vocabulary List</div>
+              <div class="card-body">
+                <% if (!vocabularies || vocabularies.length === 0) { %>
+                  <div class="alert alert-info mb-0">No vocabularies found for this user.</div>
+                <% } else { %>
+                  <div class="table-responsive">
+                    <table class="table table-bordered table-hover custom-table align-middle">
+                      <thead class="table-dark">
+                        <tr>
+                          <th>#</th>
+                          <th>Word</th>
+                          <th>Meaning</th>
+                          <th>Part of Speech</th>
+                          <th>Pronunciation</th>
+                          <th>Example</th>
+                          <th>Created At</th>
+                          <th>Updated At</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <% vocabularies.forEach((vocab, index) => { %>
+                        <tr>
+                          <td><%= index + 1 %></td>
+                          <td class="fw-bold text-primary"><%= vocab.word %></td>
+                          <td><%= vocab.meaning %></td>
+                          <td><span class="badge bg-secondary"><%= vocab.partOfSpeech %></span></td>
+                          <td><%= vocab.pronunciation || 'N/A' %></td>
+                          <td><%= vocab.examples && vocab.examples[0] ? vocab.examples[0] : 'N/A' %></td>
+                          <td><%= vocab.createdAt ? new Date(vocab.createdAt).toLocaleDateString() : 'N/A' %></td>
+                          <td><%= vocab.updatedAt ? new Date(vocab.updatedAt).toLocaleDateString() : 'N/A' %></td>
+                        </tr>
+                        <% }) %>
+                      </tbody>
+                    </table>
+                  </div>
+                <% } %>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
     </div>
+
+    <!-- Bootstrap JS -->
+    <script src="/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>

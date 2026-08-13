@@ -1,6 +1,8 @@
 import User from '../models/User.js';
 import Vocabulary from '../models/Vocabulary.js';
 import Project from '../models/Project.js';
+import Portfolio from '../models/Portfolio.js';
+import Contact from '../models/Contact.js';
 import bcrypt from 'bcryptjs';
 import path from 'path';
 import xlsx from 'xlsx';
@@ -894,6 +896,170 @@ const importVocab = async (req, res) => {
     });
   }
 };
+
+const getPortfolioData = async (req, res) => {
+  try {
+    const currentUser = req.session.user;
+
+    const portfolio = (await Portfolio.findOne({}).lean()) || {};
+    // return res.status(200).json({ portfolio });
+    return res.render('admin-portfolio', {
+      currentUser,
+      portfolio,
+    });
+  } catch (error) {
+    console.error('Error loading portfolio:', error.message);
+
+    return res.status(500).render('error', {
+      message: 'Internal Server Error',
+      error,
+    });
+  }
+};
+const createPortfolioData = async (req, res) => {
+  try {
+    const { about, skills, interests, contact } = req.body;
+
+    // 1. Validation: Ensure only one portfolio record exists
+    const existingPortfolio = await Portfolio.findOne();
+
+    if (existingPortfolio) {
+      return res.status(400).json({
+        message: 'Portfolio already exists! Please use the update feature.',
+      });
+    }
+
+    // 2. Create the portfolio record
+    // Mongoose will automatically validate the structure based on your Schema
+    const newPortfolio = await Portfolio.create({
+      about,
+      skills,
+      interests,
+      contact,
+    });
+
+    console.log('Portfolio created successfully.');
+
+    // Return a success response (or redirect)
+    return res.status(201).json({
+      message: 'Portfolio created successfully!',
+      data: newPortfolio,
+    });
+  } catch (error) {
+    // 3. Robust Error Handling
+    console.error('Error creating portfolio:', error.message);
+
+    return res.status(500).json({
+      message: 'Failed to create portfolio',
+      error: error.message,
+    });
+  }
+};
+
+const getEditPortfolioPage = async (req, res) => {
+  try {
+    const portfolio = await Portfolio.findOne({});
+    res.render('edit-portfolio', {
+      currentUser: req.session.user || req.user || { username: 'Admin' },
+      portfolio: portfolio || {},
+    });
+  } catch (error) {
+    res.status(500).send('Server Error: ' + error.message);
+  }
+};
+
+const getAdminContactMessages = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = 10;
+    const skip = (page - 1) * limit;
+
+    const totalMessages = await Contact.countDocuments({});
+    const totalPages = Math.ceil(totalMessages / limit);
+
+    const messages = await Contact.find({})
+      .sort({ createdAt: -1 }) // Show newest messages first
+      .skip(skip)
+      .limit(limit);
+
+    res.render('admin-contact', {
+      currentUser: req.session.user || req.user || { username: 'Admin' },
+      messages,
+      currentPage: page,
+      totalPages,
+      totalMessages,
+    });
+  } catch (error) {
+    res.status(500).send('Server Error: ' + error.message);
+  }
+};
+
+const deleteContactMessage = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await Contact.findByIdAndDelete(id);
+    res.redirect('/api/v1/admin/contact');
+  } catch (error) {
+    res.status(500).send('Delete Error: ' + error.message);
+  }
+};
+
+const updatePortfolio = async (req, res) => {
+  try {
+    const {
+      title,
+      description,
+      education,
+      email,
+      phone,
+      skillCategories,
+      skillItems,
+      interests,
+    } = req.body;
+
+    // Reconstruct skills array from form inputs
+    let formattedSkills = [];
+    if (skillCategories && skillItems) {
+      formattedSkills = skillCategories.map((category, index) => ({
+        category: category,
+        items: skillItems[index]
+          ? skillItems[index]
+              .split(',')
+              .map((item) => item.trim())
+              .filter(Boolean)
+          : [],
+      }));
+    }
+
+    // Reconstruct interests array from comma-separated string
+    const formattedInterests = interests
+      ? interests
+          .split(',')
+          .map((item) => item.trim())
+          .filter(Boolean)
+      : [];
+
+    await Portfolio.findOneAndUpdate(
+      {},
+      {
+        $set: {
+          'about.title': title,
+          'about.description': description,
+          'about.education': education,
+          'contact.email': email,
+          'contact.phone': phone,
+          skills: formattedSkills,
+          interests: formattedInterests,
+        },
+      },
+      { new: true, upsert: true },
+    );
+
+    res.redirect('/api/v1/admin/portfolio');
+  } catch (error) {
+    res.status(500).send('Update Error: ' + error.message);
+  }
+};
 export default {
   getAdminDashboard,
   getUsersPage,
@@ -923,4 +1089,12 @@ export default {
   deleteVocab,
   importVocab,
   getUserVocabularies,
+  //portfolio
+  getPortfolioData,
+  createPortfolioData,
+  getEditPortfolioPage,
+  updatePortfolio,
+  //contact
+  getAdminContactMessages,
+  deleteContactMessage,
 };

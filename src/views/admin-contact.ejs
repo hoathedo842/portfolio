@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Contact Messages - Admin Panel</title>
+
+    <!-- Reset CSS -->
+    <link rel="stylesheet" href="/css/reset.css" />
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css" />
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="/font/bootstrap-icons.min.css" />
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/admin-users.css" />
+  </head>
+
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-dark bg-dark fixed-top custom-navbar">
+      <div class="container-fluid">
+        <button
+          class="navbar-toggler d-md-none"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#sidebarMenu"
+          aria-controls="sidebarMenu"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <span class="navbar-brand">Admin Panel</span>
+        <div class="d-flex align-items-center gap-2">
+          <span class="text-white d-none d-sm-inline">
+            Welcome, <%= currentUser.username %> (<%= currentUser.firstName || '' %> <%= currentUser.lastName || '' %>)
+          </span>
+          <a href="/api/v1/admin/portfolio" class="btn btn-outline-warning btn-sm">
+            📁 Portfolio
+          </a>
+          <form action="/api/v1/auth/signout" method="POST" class="mb-0">
+            <button type="submit" class="btn btn-outline-light btn-sm">Sign Out</button>
+          </form>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row">
+        <!-- Sidebar -->
+        <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse pt-5 custom-sidebar">
+          <div class="position-sticky">
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a class="nav-link" href="/api/v1/admin/dashboard">🏠 Dashboard</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/api/v1/admin/users">👥 User Management</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/api/v1/admin/projects">📁 Projects</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/api/v1/admin/dictionary">📚 Dictionary</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/api/v1/admin/portfolio">⚙️ Portfolio Data</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link active" href="/api/v1/admin/contact">✉️ Contact Messages</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/api/v1/admin/statistics">📈 Statistics</a>
+              </li>
+            </ul>
+          </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 pt-5">
+          <div class="pt-3">
+            <h2>Client Inquiries & Messages (<%= totalMessages %>)</h2>
+
+            <!-- Message Table Card -->
+            <div class="card mb-4 custom-card mt-4">
+              <div class="card-header">Messages Inbox</div>
+              <div class="card-body">
+                <% if (!messages || messages.length === 0) { %>
+                  <div class="alert alert-info mb-0">No contact messages received yet.</div>
+                <% } else { %>
+                  <div class="table-responsive">
+                    <table class="table table-bordered table-hover custom-table align-middle">
+                      <thead class="table-dark">
+                        <tr>
+                          <th>#</th>
+                          <th>Name</th>
+                          <th>Email</th>
+                          <th>Phone</th>
+                          <th>Message</th>
+                          <th>Received At</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <% messages.forEach((msg, index) => { %>
+                        <tr>
+                          <td><%= index + 1 + (currentPage - 1) * 10 %></td>
+                          <td class="fw-bold"><%= msg.name %></td>
+                          <td>
+                            <a href="mailto:<%= msg.email %>"><%= msg.email %></a>
+                          </td>
+                          <td><%= msg.phone ? msg.phone : 'N/A' %></td>
+                          <td>
+                            <span class="d-inline-block text-truncate" style="max-width: 250px;" title="<%= msg.message %>">
+                              <%= msg.message %>
+                            </span>
+                          </td>
+                          <td><%= new Date(msg.createdAt).toLocaleString('vi-VN') %></td>
+                          <td>
+                            <form action="/api/v1/admin/contact/<%= msg._id %>?_method=DELETE" method="POST" onsubmit="return confirm('Are you sure you want to delete this message?');">
+                              <button type="submit" class="btn btn-danger btn-sm" title="Delete">
+                                🗑️
+                              </button>
+                            </form>
+                          </td>
+                        </tr>
+                        <% }) %>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <!-- Pagination -->
+                  <% if (totalPages > 1) { %>
+                  <nav aria-label="Message pagination">
+                    <ul class="pagination justify-content-center">
+                      <% for (let i = 1; i <= totalPages; i++) { %>
+                      <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                        <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                      </li>
+                      <% } %>
+                    </ul>
+                  </nav>
+                  <% } %>
+                <% } %>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

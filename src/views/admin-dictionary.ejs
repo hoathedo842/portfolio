@@ -35,16 +35,21 @@
         </button>
         <span class="navbar-brand">Admin Panel</span>
         <div class="d-flex align-items-center gap-2">
-          <span class="text-white">
-            Welcome, <%= currentUser.username %> (<%= currentUser.firstName %>
-            <%= currentUser.lastName %>)
+          <span class="text-white d-none d-sm-inline">
+            Welcome, <%= currentUser.username %> (<%= currentUser.firstName %> <%= currentUser.lastName %>)
           </span>
+          <a
+            href="/api/v1/admin/portfolio"
+            class="btn btn-outline-warning btn-sm"
+          >
+            📁 Portfolio
+          </a>
           <a
             href="/api/v1/admin/users/profile"
             class="btn btn-outline-light btn-sm"
             >Update Info</a
           >
-          <form action="/api/v1/auth/signout" method="POST">
+          <form action="/api/v1/auth/signout" method="POST" class="mb-0">
             <button type="submit" class="btn btn-outline-light btn-sm">
               Sign Out
             </button>
@@ -80,6 +85,11 @@
               <li class="nav-item">
                 <a class="nav-link active" href="/api/v1/admin/dictionary"
                   >📚 Dictionary</a
+                >
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/api/v1/admin/portfolio"
+                  >⚙️ Portfolio Data</a
                 >
               </li>
               <li class="nav-item">
@@ -237,9 +247,9 @@
                         <th>Part of Speech</th>
                         <th>Meaning</th>
                         <th>Examples</th>
-                        <td>createdAt</td>
-                        <td>updatedAt</td>
-                        <td>createdBy</td>
+                        <th>Created At</th>
+                        <th>Updated At</th>
+                        <th>Created By</th>
                         <th>Actions</th>
                       </tr>
                     </thead>
@@ -262,16 +272,13 @@
                           <% } else { %> <%= vocab.examples %> <% } %>
                         </td>
                         <td>
-                          <%= new
-                          Date(vocab.createdAt).toLocaleDateString('vi-VN') %>
+                          <%= new Date(vocab.createdAt).toLocaleDateString('vi-VN') %>
                         </td>
                         <td>
-                          <%= new
-                          Date(vocab.updatedAt).toLocaleDateString('vi-VN') %>
+                          <%= new Date(vocab.updatedAt).toLocaleDateString('vi-VN') %>
                         </td>
                         <td>
-                          <%= vocab.createdBy ? vocab.createdBy.username :
-                          "Unknown" %>
+                          <%= vocab.createdBy ? vocab.createdBy.username : "Unknown" %>
                         </td>
                         <td>
                           <div class="btn-group btn-group-sm" role="group">
@@ -304,25 +311,25 @@
 
                 <!-- Pagination -->
                 <nav aria-label="Vocabulary pagination">
-                <ul class="pagination justify-content-center">
-    <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
-        <a class="page-link" href="?page=<%= currentPage - 1 %>&search=<%= search %>">&laquo;</a>
-    </li>
+                  <ul class="pagination justify-content-center">
+                    <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+                        <a class="page-link" href="?page=<%= currentPage - 1 %>&search=<%= search %>">&laquo;</a>
+                    </li>
 
-    <% paginationRange.forEach(i => { %>
-        <% if (i === '...') { %>
-            <li class="page-item disabled"><span class="page-link">...</span></li>
-        <% } else { %>
-            <li class="page-item <%= currentPage === i ? 'active' : '' %>">
-                <a class="page-link" href="?page=<%= i %>&search=<%= search %>"><%= i %></a>
-            </li>
-        <% } %>
-    <% }) %>
+                    <% paginationRange.forEach(i => { %>
+                        <% if (i === '...') { %>
+                            <li class="page-item disabled"><span class="page-link">...</span></li>
+                        <% } else { %>
+                            <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                                <a class="page-link" href="?page=<%= i %>&search=<%= search %>"><%= i %></a>
+                            </li>
+                        <% } %>
+                    <% }) %>
 
-    <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
-        <a class="page-link" href="?page=<%= currentPage + 1 %>&search=<%= search %>">&raquo;</a>
-    </li>
-</ul>
+                    <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+                        <a class="page-link" href="?page=<%= currentPage + 1 %>&search=<%= search %>">&raquo;</a>
+                    </li>
+                  </ul>
                 </nav>
                 <% } %>
               </div>

@@ -36,17 +36,22 @@
         </button>
         <span class="navbar-brand">Admin Panel</span>
         <div class="d-flex align-items-center gap-2">
-          <span class="text-white">
-            Welcome, <%= currentUser.username %> (<%= currentUser.firstName %>
-            <%= currentUser.lastName %>)
+          <span class="text-white d-none d-sm-inline">
+            Welcome, <%= currentUser.username %> (<%= currentUser.firstName %> <%= currentUser.lastName %>)
           </span>
+          <a
+            href="/api/v1/admin/portfolio"
+            class="btn btn-outline-warning btn-sm"
+          >
+            📁 Portfolio
+          </a>
           <a
             href="/api/v1/admin/users/profile"
             class="btn btn-outline-light btn-sm"
           >
             Update Info
           </a>
-          <form action="/api/v1/auth/signout" method="POST">
+          <form action="/api/v1/auth/signout" method="POST" class="mb-0">
             <button type="submit" class="btn btn-outline-light btn-sm">
               Sign Out
             </button>
@@ -82,6 +87,11 @@
               <li class="nav-item">
                 <a class="nav-link" href="/api/v1/admin/dictionary"
                   >📚 Dictionary</a
+                >
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/api/v1/admin/portfolio"
+                  >⚙️ Portfolio Data</a
                 >
               </li>
               <li class="nav-item">
@@ -252,12 +262,10 @@
                           >
                         </td>
                         <td>
-                          <%= new
-                          Date(project.createdAt).toLocaleDateString('vi-VN') %>
+                          <%= new Date(project.createdAt).toLocaleDateString('vi-VN') %>
                         </td>
                         <td>
-                          <%= new
-                          Date(project.updatedAt).toLocaleDateString('vi-VN') %>
+                          <%= new Date(project.updatedAt).toLocaleDateString('vi-VN') %>
                         </td>
                         <td>
                           <div class="btn-group btn-group-sm" role="group">

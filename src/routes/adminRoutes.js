@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import User from '../models/User.js';
 import Project from '../models/Project.js';
 import Vocabulary from '../models/Vocabulary.js';
+import Portfolio from '../models/Portfolio.js';
 import upload from '../middlewares/upload.js';
 import auth from '../middlewares/auth.js';
 import path from 'path';
@@ -186,5 +187,14 @@ router.post(
 );
 
 router.get('/users/:id/vocabularies', adminController.getUserVocabularies);
+router.get('/portfolio', adminController.getPortfolioData);
+router.post('/portfolio', adminController.createPortfolioData);
+router.get('/portfolio/edit', adminController.getEditPortfolioPage);
+router.post('/portfolio/update', adminController.updatePortfolio);
 
+//contact
+router.get('/contact', adminController.getAdminContactMessages);
+
+// Route to delete a contact message
+router.delete('/contact/:id', adminController.deleteContactMessage);
 export default router;
