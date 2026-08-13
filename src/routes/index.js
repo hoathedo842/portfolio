@@ -4,10 +4,18 @@ import homeRouter from './homeRoutes.js';
 import userRouter from './userRoutes.js';
 
 const applyRoutes = (app) => {
-  app.use('/', homeRouter);
+  app.get('/health', (req, res) => {
+    res.status(200).json({
+      status: 'OK',
+      timestamp: new Date().toISOString(),
+    });
+  });
+
   app.use('/api/v1/auth', authRouter);
   app.use('/api/v1/admin', adminRouter);
   app.use('/api/v1/user', userRouter);
+
+  app.use('/', homeRouter);
 };
 
 export default applyRoutes;
