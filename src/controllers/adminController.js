@@ -902,7 +902,7 @@ const getPortfolioData = async (req, res) => {
     const currentUser = req.session.user;
 
     const portfolio = (await Portfolio.findOne({}).lean()) || {};
-    // return res.status(200).json({ portfolio });
+
     return res.render('admin-portfolio', {
       currentUser,
       portfolio,
@@ -916,6 +916,7 @@ const getPortfolioData = async (req, res) => {
     });
   }
 };
+
 const createPortfolioData = async (req, res) => {
   try {
     const { about, skills, interests, contact } = req.body;
@@ -1007,6 +1008,7 @@ const deleteContactMessage = async (req, res) => {
 const updatePortfolio = async (req, res) => {
   try {
     const {
+      name,
       title,
       description,
       education,
@@ -1043,6 +1045,7 @@ const updatePortfolio = async (req, res) => {
       {},
       {
         $set: {
+          'about.name': name,
           'about.title': title,
           'about.description': description,
           'about.education': education,
@@ -1052,7 +1055,7 @@ const updatePortfolio = async (req, res) => {
           interests: formattedInterests,
         },
       },
-      { new: true, upsert: true },
+      { new: true, upsert: true, runValidators: true },
     );
 
     res.redirect('/api/v1/admin/portfolio');
