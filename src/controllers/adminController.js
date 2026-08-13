@@ -919,41 +919,83 @@ const getPortfolioData = async (req, res) => {
 
 const createPortfolioData = async (req, res) => {
   try {
-    const { about, skills, interests, contact } = req.body;
+    const {
+      name,
+      title,
+      description,
+      education,
+      email,
+      phone,
+      skillCategories,
+      skillItems,
+      interests,
+      socialNames,
+      socialUrls,
+    } = req.body;
 
-    // 1. Validation: Ensure only one portfolio record exists
-    const existingPortfolio = await Portfolio.findOne();
+    // Xử lý mảng Skills (Category & Items)
+    let formattedSkills = [];
+    if (skillCategories && skillItems) {
+      const categories = Array.isArray(skillCategories)
+        ? skillCategories
+        : [skillCategories];
+      const items = Array.isArray(skillItems) ? skillItems : [skillItems];
 
-    if (existingPortfolio) {
-      return res.status(400).json({
-        message: 'Portfolio already exists! Please use the update feature.',
-      });
+      formattedSkills = categories
+        .map((cat, index) => ({
+          category: cat ? cat.trim() : '',
+          items: items[index]
+            ? items[index]
+                .split(',')
+                .map((item) => item.trim())
+                .filter(Boolean)
+            : [],
+        }))
+        .filter((s) => s.category);
     }
 
-    // 2. Create the portfolio record
-    // Mongoose will automatically validate the structure based on your Schema
-    const newPortfolio = await Portfolio.create({
-      about,
-      skills,
-      interests,
-      contact,
+    // Xử lý Interests (Chuyển chuỗi thành mảng)
+    const formattedInterests = interests
+      ? interests
+          .split(',')
+          .map((item) => item.trim())
+          .filter(Boolean)
+      : [];
+
+    // Xử lý Social Links (GitHub, LinkedIn...)
+    let formattedSocialLinks = [];
+    if (socialNames && socialUrls) {
+      const names = Array.isArray(socialNames) ? socialNames : [socialNames];
+      const urls = Array.isArray(socialUrls) ? socialUrls : [socialUrls];
+
+      formattedSocialLinks = names
+        .map((sName, index) => ({
+          name: sName ? sName.trim() : '',
+          url: urls[index] ? urls[index].trim() : '',
+        }))
+        .filter((link) => link.name && link.url);
+    }
+
+    await Portfolio.create({
+      about: {
+        name,
+        title,
+        description,
+        education,
+      },
+      contact: {
+        email,
+        phone,
+        socialLinks: formattedSocialLinks,
+      },
+      skills: formattedSkills,
+      interests: formattedInterests,
     });
 
-    console.log('Portfolio created successfully.');
-
-    // Return a success response (or redirect)
-    return res.status(201).json({
-      message: 'Portfolio created successfully!',
-      data: newPortfolio,
-    });
+    return res.redirect('/api/v1/admin/portfolio');
   } catch (error) {
-    // 3. Robust Error Handling
-    console.error('Error creating portfolio:', error.message);
-
-    return res.status(500).json({
-      message: 'Failed to create portfolio',
-      error: error.message,
-    });
+    console.error('Create Portfolio Error:', error.message);
+    return res.status(500).send('Creation Error: ' + error.message);
   }
 };
 
@@ -966,6 +1008,87 @@ const getEditPortfolioPage = async (req, res) => {
     });
   } catch (error) {
     res.status(500).send('Server Error: ' + error.message);
+  }
+};
+
+const updatePortfolio = async (req, res) => {
+  try {
+    const {
+      name,
+      title,
+      description,
+      education,
+      email,
+      phone,
+      skillCategories,
+      skillItems,
+      interests,
+      socialNames,
+      socialUrls,
+    } = req.body;
+
+    let formattedSkills = [];
+    if (skillCategories && skillItems) {
+      const categories = Array.isArray(skillCategories)
+        ? skillCategories
+        : [skillCategories];
+      const items = Array.isArray(skillItems) ? skillItems : [skillItems];
+
+      formattedSkills = categories
+        .map((cat, index) => ({
+          category: cat ? cat.trim() : '',
+          items: items[index]
+            ? items[index]
+                .split(',')
+                .map((item) => item.trim())
+                .filter(Boolean)
+            : [],
+        }))
+        .filter((s) => s.category);
+    }
+
+    const formattedInterests = interests
+      ? interests
+          .split(',')
+          .map((item) => item.trim())
+          .filter(Boolean)
+      : [];
+
+    let formattedSocialLinks = [];
+    if (socialNames && socialUrls) {
+      const names = Array.isArray(socialNames) ? socialNames : [socialNames];
+      const urls = Array.isArray(socialUrls) ? socialUrls : [socialUrls];
+
+      formattedSocialLinks = names
+        .map((sName, index) => ({
+          name: sName ? sName.trim() : '',
+          url: urls[index] ? urls[index].trim() : '',
+        }))
+        .filter((link) => link.name && link.url);
+    }
+
+    await Portfolio.findOneAndUpdate(
+      {},
+      {
+        $set: {
+          'about.name': name,
+          'about.title': title,
+          'about.description': description,
+          'about.education': education,
+          'contact.email': email,
+          'contact.phone': phone,
+          'contact.socialLinks': formattedSocialLinks,
+          skills: formattedSkills,
+          interests: formattedInterests,
+        },
+      },
+      { new: true, upsert: true, runValidators: true },
+    );
+
+    return res.redirect('/api/v1/admin/portfolio');
+  } catch (error) {
+    console.error('Update Portfolio Error:', error.message);
+    return res.status(500).send('Update Error: ' + error.message);
   }
 };
 
@@ -1005,64 +1128,6 @@ const deleteContactMessage = async (req, res) => {
   }
 };
 
-const updatePortfolio = async (req, res) => {
-  try {
-    const {
-      name,
-      title,
-      description,
-      education,
-      email,
-      phone,
-      skillCategories,
-      skillItems,
-      interests,
-    } = req.body;
-
-    // Reconstruct skills array from form inputs
-    let formattedSkills = [];
-    if (skillCategories && skillItems) {
-      formattedSkills = skillCategories.map((category, index) => ({
-        category: category,
-        items: skillItems[index]
-          ? skillItems[index]
-              .split(',')
-              .map((item) => item.trim())
-              .filter(Boolean)
-          : [],
-      }));
-    }
-
-    // Reconstruct interests array from comma-separated string
-    const formattedInterests = interests
-      ? interests
-          .split(',')
-          .map((item) => item.trim())
-          .filter(Boolean)
-      : [];
-
-    await Portfolio.findOneAndUpdate(
-      {},
-      {
-        $set: {
-          'about.name': name,
-          'about.title': title,
-          'about.description': description,
-          'about.education': education,
-          'contact.email': email,
-          'contact.phone': phone,
-          skills: formattedSkills,
-          interests: formattedInterests,
-        },
-      },
-      { new: true, upsert: true, runValidators: true },
-    );
-
-    res.redirect('/api/v1/admin/portfolio');
-  } catch (error) {
-    res.status(500).send('Update Error: ' + error.message);
-  }
-};
 export default {
   getAdminDashboard,
   getUsersPage,
