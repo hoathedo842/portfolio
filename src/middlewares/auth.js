@@ -1,10 +1,12 @@
 import User from '../models/User.js';
+
 const authSignin = (req, res, next) => {
   if (!req.session.user) {
     return res.status(302).redirect('/api/v1/auth/signin');
   }
   next();
 };
+
 const checkSuperAdmin = (req, res, next) => {
   const currentUser = req.session.user;
 
@@ -40,6 +42,7 @@ const checkUser = (req, res, next) => {
 
   next();
 };
+
 const checkGuest = (req, res, next) => {
   const currentUser = req.session.user;
 
@@ -51,6 +54,7 @@ const checkGuest = (req, res, next) => {
 
   next();
 };
+
 const assignCreateUserRole = (req, res, next) => {
   const currentUser = req.session.user;
   const { role: roleInput } = req.body;
@@ -70,6 +74,7 @@ const assignCreateUserRole = (req, res, next) => {
   req.newUserRole = role;
   next();
 };
+
 const checkUpdateUserPermission = async (req, res, next) => {
   const currentUser = req.session.user;
   const { id } = req.params;
@@ -96,13 +101,13 @@ const checkUpdateUserPermission = async (req, res, next) => {
       message: 'You do not have permission to update users.',
     });
   } catch (error) {
-    console.error('Error checking update permission:', error.message);
     return res.status(500).render('error', {
       message: 'Internal Server Error',
       error,
     });
   }
 };
+
 const assignUpdateUserRole = (req, res, next) => {
   const currentUser = req.session.user;
   const { role: roleInput } = req.body;
@@ -119,11 +124,11 @@ const assignUpdateUserRole = (req, res, next) => {
   req.updateUserRole = role;
   next();
 };
+
 const checkChangePasswordPermission = async (req, res, next) => {
   const currentUser = req.session.user;
   const { id } = req.params;
 
-  // Nếu không có id param, nghĩa là user tự đổi password
   if (!id) {
     return next();
   }
@@ -138,17 +143,14 @@ const checkChangePasswordPermission = async (req, res, next) => {
 
     req.userById = userById;
 
-    // Super Admin: full permission
     if (currentUser.role === 0) {
       return next();
     }
 
-    // Admin can change password of role 2 or 3
     if (currentUser.role === 1 && [2, 3].includes(userById.role)) {
       return next();
     }
 
-    // User can change their own password
     if (currentUser._id.toString() === userById._id.toString()) {
       return next();
     }
@@ -157,13 +159,13 @@ const checkChangePasswordPermission = async (req, res, next) => {
       message: 'You do not have permission to change password for this user.',
     });
   } catch (error) {
-    console.error('Error checking change password permission:', error.message);
     return res.status(500).render('error', {
       message: 'Internal Server Error',
       error,
     });
   }
 };
+
 const checkDeleteUserPermission = async (req, res, next) => {
   const currentUser = req.session.user;
   const { id } = req.params;
@@ -190,13 +192,13 @@ const checkDeleteUserPermission = async (req, res, next) => {
       message: 'You do not have permission to delete this user.',
     });
   } catch (error) {
-    console.error('Error checking delete permission:', error.message);
     return res.status(500).render('error', {
       message: 'Internal Server Error',
       error,
     });
   }
 };
+
 export default {
   authSignin,
   checkSuperAdmin,

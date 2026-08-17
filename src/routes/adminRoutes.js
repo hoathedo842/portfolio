@@ -14,33 +14,34 @@ import adminController from '../controllers/adminController.js';
 
 const router = express.Router();
 
-/**
- * DASHBOARD ROUTES
- */
 router.get(
   '/dashboard',
   auth.authSignin,
   auth.checkAdmin,
   adminController.getAdminDashboard,
 );
+
 router.get(
   '/users',
   auth.authSignin,
   auth.checkAdmin,
   adminController.getUsersPage,
 );
+
 router.get(
   '/projects',
   auth.authSignin,
   auth.checkAdmin,
   adminController.getProjectsPage,
 );
+
 router.get(
   '/dictionary',
   auth.authSignin,
   auth.checkAdmin,
   adminController.getDictionaryPage,
 );
+
 router.get(
   '/statistics',
   auth.authSignin,
@@ -48,15 +49,9 @@ router.get(
   adminController.getStatisticsPage,
 );
 
-/**
- * USER PROFILE ROUTES
- */
 router.get('/users/profile', auth.authSignin, adminController.getProfilePage);
-router.put('/users/profile', auth.authSignin, adminController.updateProfile);
 
-/**
- * USER MANAGEMENT ROUTES (ADMIN)
- */
+router.put('/users/profile', auth.authSignin, adminController.updateProfile);
 
 router.get(
   '/users/create',
@@ -64,6 +59,7 @@ router.get(
   auth.checkAdmin,
   adminController.getCreateUserPage,
 );
+
 router.post(
   '/users',
   auth.authSignin,
@@ -111,7 +107,6 @@ router.delete(
   adminController.deleteUser,
 );
 
-// project
 router.post(
   '/projects',
   auth.authSignin,
@@ -142,7 +137,6 @@ router.delete(
   adminController.deleteProject,
 );
 
-// dictionary
 router.post(
   '/dictionary',
   auth.authSignin,
@@ -187,14 +181,17 @@ router.post(
 );
 
 router.get('/users/:id/vocabularies', adminController.getUserVocabularies);
+
 router.get('/portfolio', adminController.getPortfolioData);
+
 router.post('/portfolio', adminController.createPortfolioData);
+
 router.get('/portfolio/edit', adminController.getEditPortfolioPage);
+
 router.post('/portfolio/update', adminController.updatePortfolio);
 
-//contact
 router.get('/contact', adminController.getAdminContactMessages);
 
-// Route to delete a contact message
 router.delete('/contact/:id', adminController.deleteContactMessage);
+
 export default router;

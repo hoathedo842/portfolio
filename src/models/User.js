@@ -20,7 +20,6 @@ const userSchema = new mongoose.Schema(
     },
     firstName: {
       type: String,
-
       trim: true,
     },
     lastName: {
@@ -29,13 +28,14 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: Number,
-      enum: [0, 1, 2, 3],
       required: true,
       default: 2,
-      // 0: superAdmin; 1: admin; 2: user; 3: guest
+      enum: [0, 1, 2, 3],
     },
   },
-  { timestamps: true },
+  {
+    timestamps: true,
+  },
 );
 
 const User = mongoose.model('User', userSchema);

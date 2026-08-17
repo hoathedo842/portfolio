@@ -23,10 +23,9 @@ const applyMiddleware = (app) => {
         httpOnly: true,
         maxAge: 1000 * 60 * 60,
       },
-    })
+    }),
   );
   app.use(methodOverride('_method'));
-  // app.use(csurf());
   app.use(flash());
 };
 

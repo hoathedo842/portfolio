@@ -4,14 +4,13 @@ import path from 'path';
 import xlsx from 'xlsx';
 import fs from 'fs';
 import bcrypt from 'bcryptjs';
+
 const getMyDashboard = async (req, res) => {
   try {
     const currentUser = req.session.user;
-
     const { search, page } = req.query;
 
     const searchQuery = search ? search.trim() : '';
-
     const pageNum = parseInt(page) || 1;
     const limit = 10;
     const skip = (pageNum - 1) * limit;
@@ -30,7 +29,7 @@ const getMyDashboard = async (req, res) => {
         .skip(skip)
         .limit(limit)
         .select(
-          'word pronunciation partOfSpeech meaning examples createdAt updatedAt'
+          'word pronunciation partOfSpeech meaning examples createdAt updatedAt',
         )
         .lean(),
       Vocabulary.countDocuments(queryObj),
@@ -47,8 +46,6 @@ const getMyDashboard = async (req, res) => {
       search: searchQuery,
     });
   } catch (error) {
-    console.error('Error fetching dictionary:', error.message);
-
     return res.status(500).render('error', {
       message: 'Internal Server Error',
       error,
@@ -71,13 +68,8 @@ const createVocabulary = async (req, res) => {
 
     await newVocabulary.save();
 
-    console.log(
-      `Created new vocabulary "${word}" by ${req.session.user.username}`
-    );
-
     return res.redirect('/api/v1/user/dashboard');
   } catch (error) {
-    console.error('Error creating vocabulary:', error.message);
     return res.status(500).render('error', {
       message: 'Internal Server Error',
       error,
@@ -97,7 +89,6 @@ const getProfilePage = async (req, res) => {
 
     return res.render('user-update-profile', { currentUser: user });
   } catch (error) {
-    console.error('Error fetching user profile:', error.message);
     return res.status(500).render('error', {
       message: 'Internal Server Error',
       error,
@@ -112,7 +103,7 @@ const updateProfile = async (req, res) => {
     const updatedUser = await User.findByIdAndUpdate(
       req.session.user._id,
       { username, email, firstName, lastName },
-      { new: true }
+      { new: true },
     );
 
     if (!updatedUser) {
@@ -125,7 +116,6 @@ const updateProfile = async (req, res) => {
 
     return res.redirect('/api/v1/user/dashboard');
   } catch (error) {
-    console.error('Error updating profile:', error.message);
     return res.status(500).render('error', {
       message: 'Internal Server Error',
       error,
@@ -153,7 +143,6 @@ const importVocab = async (req, res) => {
       det: 'determiner',
     };
 
-    // Mapping Excel header ➔ schema field
     const keyMap = {
       Word: 'word',
       Pronunciation: 'pronunciation',
@@ -162,7 +151,6 @@ const importVocab = async (req, res) => {
       Examples: 'examples',
     };
 
-    // Chuẩn hóa key + map về schema field
     const normalizedData = data.map((item) => {
       const obj = {};
       for (let key in item) {
@@ -190,10 +178,8 @@ const importVocab = async (req, res) => {
 
     const validData = formattedData.filter(
       (item) =>
-        item.word && item.pronunciation && item.partOfSpeech && item.meaning
+        item.word && item.pronunciation && item.partOfSpeech && item.meaning,
     );
-
-    const skipped = formattedData.length - validData.length;
 
     if (validData.length > 0) {
       await Vocabulary.insertMany(validData);
@@ -201,16 +187,8 @@ const importVocab = async (req, res) => {
 
     fs.unlinkSync(filePath);
 
-    console.log(
-      `Imported ${validData.length} vocabulary items by ${req.session.user.username}`
-    );
-    if (skipped > 0) {
-      console.log(`Skipped ${skipped} rows due to missing required fields`);
-    }
-
     return res.redirect('/api/v1/user/dashboard');
   } catch (error) {
-    console.error('Error importing excel:', error);
     return res.status(500).render('error', {
       message: 'Internal Server Error',
       error,
@@ -241,17 +219,16 @@ const exportDictionary = async (req, res) => {
 
     res.setHeader(
       'Content-Disposition',
-      'attachment; filename="dictionary_export.xlsx"'
+      'attachment; filename="dictionary_export.xlsx"',
     );
 
     res.setHeader(
       'Content-Type',
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     );
 
     res.send(excelBuffer);
   } catch (error) {
-    console.error('Error exporting excel:', error);
     res.status(500).send('Internal Server Error');
   }
 };
@@ -269,15 +246,11 @@ const getVocabById = async (req, res) => {
       });
     }
 
-    console.log(`Fetched vocabulary ${id} by ${req.session.user.username}`);
-
     return res.render('user-vocab-detail', {
       vocabulary,
       currentUser: req.session.user,
     });
   } catch (error) {
-    console.error('Error fetching vocabulary details:', error.message);
-
     return res.status(500).render('error', {
       message: 'Internal Server Error',
       error,
@@ -302,7 +275,7 @@ const updateVocab = async (req, res) => {
           .map((e) => e.trim())
           .filter((e) => e),
       },
-      { new: true }
+      { new: true },
     );
 
     if (!updated) {
@@ -312,11 +285,8 @@ const updateVocab = async (req, res) => {
       });
     }
 
-    console.log(`Updated vocabulary ${id} by ${req.session.user.username}`);
-
     return res.redirect('/api/v1/user/dashboard');
   } catch (error) {
-    console.error('Error updating vocabulary:', error.message);
     return res.status(500).render('error', {
       message: 'Internal Server Error',
       error,
@@ -335,24 +305,20 @@ const deleteVocab = async (req, res) => {
       });
     }
 
-    console.log(
-      `Deleted vocabulary ${req.params.id} by ${req.session.user.username}`
-    );
-
     return res.redirect('/api/v1/user/dashboard');
   } catch (error) {
-    console.error('Error deleting vocabulary:', error.message);
     return res.status(500).render('error', {
       message: 'Internal Server Error',
       error,
     });
   }
 };
+
 const getChangePasswordPage = async (req, res) => {
   try {
     const currentUser = req.session.user;
     const userById = await User.findById(currentUser._id).lean();
-    console.log(userById);
+
     if (!userById) {
       return res.status(404).render('error', {
         message: 'User not found.',
@@ -364,12 +330,12 @@ const getChangePasswordPage = async (req, res) => {
       userById,
     });
   } catch (err) {
-    console.error('Error loading change password page:', err.message);
     return res.status(500).render('error', {
       message: 'Internal Server Error',
     });
   }
 };
+
 const changePassword = async (req, res) => {
   try {
     const currentUser = req.session.user;
@@ -399,16 +365,15 @@ const changePassword = async (req, res) => {
     user.password = hashedPassword;
     await user.save();
 
-    console.log(`Password of user ${currentUser.username} changed.`);
     return res.redirect('/api/v1/user/dashboard');
   } catch (error) {
-    console.error('Error changing password:', error.message);
     return res.status(500).render('error', {
       message: 'Internal Server Error',
       error,
     });
   }
 };
+
 export default {
   getMyDashboard,
   createVocabulary,

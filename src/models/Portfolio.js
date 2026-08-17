@@ -3,33 +3,73 @@ import mongoose from 'mongoose';
 const PortfolioSchema = new mongoose.Schema(
   {
     about: {
-      name: { type: String, required: true },
-      title: { type: String, required: true },
-      description: { type: String, required: true },
-      avatarUrl: { type: String },
-      logoUrl: { type: String },
-      education: { type: String },
+      name: {
+        type: String,
+        required: true,
+        trim: true,
+      },
+      title: {
+        type: String,
+        required: true,
+        trim: true,
+      },
+      description: {
+        type: String,
+        required: true,
+        trim: true,
+      },
+      avatarUrl: {
+        type: String,
+        trim: true,
+      },
+      logoUrl: {
+        type: String,
+        trim: true,
+      },
+      education: {
+        type: String,
+        trim: true,
+      },
     },
-
     skills: [
       {
-        category: { type: String, required: true },
-        items: { type: [String], required: true },
+        category: {
+          type: String,
+          required: true,
+          trim: true,
+        },
+        items: {
+          type: [String],
+          required: true,
+        },
       },
     ],
-
     interests: {
       type: [String],
       default: [],
     },
-
     contact: {
-      email: { type: String, required: true },
-      phone: { type: String },
+      email: {
+        type: String,
+        required: true,
+        trim: true,
+      },
+      phone: {
+        type: String,
+        trim: true,
+      },
       socialLinks: [
         {
-          name: { type: String, required: true },
-          url: { type: String, required: true },
+          name: {
+            type: String,
+            required: true,
+            trim: true,
+          },
+          url: {
+            type: String,
+            required: true,
+            trim: true,
+          },
         },
       ],
     },

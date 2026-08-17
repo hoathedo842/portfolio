@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', function () {
-  // Initialize intl-tel-input
   const phoneInputField = document.querySelector('#phone');
   if (!phoneInputField) return;
 
@@ -15,7 +14,6 @@ document.addEventListener('DOMContentLoaded', function () {
       'https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js',
   });
 
-  // Handle AJAX form submission
   const contactForm = document.getElementById('contactForm');
   if (!contactForm) return;
 

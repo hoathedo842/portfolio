@@ -16,6 +16,7 @@ const vocabularySchema = new mongoose.Schema(
     partOfSpeech: {
       type: String,
       required: true,
+      trim: true,
       enum: [
         'noun',
         'verb',
@@ -43,8 +44,11 @@ const vocabularySchema = new mongoose.Schema(
       required: true,
     },
   },
-  { timestamps: true },
+  {
+    timestamps: true,
+  },
 );
 
 const Vocabulary = mongoose.model('Vocabulary', vocabularySchema);
+
 export default Vocabulary;

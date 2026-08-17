@@ -33,8 +33,6 @@ const getAdminDashboard = async (req, res) => {
       totalProjects,
     });
   } catch (error) {
-    console.error('Error loading dashboard:', error.message);
-
     return res.status(500).render('error', {
       message: 'Internal Server Error',
       error,
@@ -77,7 +75,6 @@ const getUsersPage = async (req, res) => {
       search: searchQuery,
     });
   } catch (error) {
-    console.error('Error fetching users:', error.message);
     return res.status(500).render('error', {
       message: 'Internal Server Error',
       error,
@@ -124,13 +121,13 @@ const getProjectsPage = async (req, res) => {
       search: searchQuery,
     });
   } catch (error) {
-    console.error('Error loading projects:', error.message);
     return res.status(500).render('error', {
       message: 'Internal Server Error',
       error,
     });
   }
 };
+
 const getPaginationRange = (currentPage, totalPages) => {
   const delta = 2;
   const range = [];
@@ -160,6 +157,7 @@ const getPaginationRange = (currentPage, totalPages) => {
   }
   return rangeWithDots;
 };
+
 const getDictionaryPage = async (req, res) => {
   try {
     const currentUser = req.session.user;
@@ -203,8 +201,6 @@ const getDictionaryPage = async (req, res) => {
       paginationRange,
     });
   } catch (error) {
-    console.error('Error fetching dictionary:', error.message);
-
     return res.status(500).render('error', {
       message: 'Internal Server Error',
       error,
@@ -235,8 +231,6 @@ const getUserVocabularies = async (req, res) => {
       vocabularies,
     });
   } catch (error) {
-    console.error('Error loading user vocabularies:', error.message);
-
     return res.status(500).render('error', {
       message: 'Internal Server Error',
       error,
@@ -259,7 +253,6 @@ const getStatisticsPage = async (req, res) => {
       totalProjects,
     });
   } catch (error) {
-    console.error('Error fetching statistics:', error.message);
     return res.status(500).render('error', {
       message: 'Internal Server Error',
       error,
@@ -279,7 +272,6 @@ const getProfilePage = async (req, res) => {
 
     return res.render('update-profile', { currentUser: user });
   } catch (error) {
-    console.error('Error fetching user profile:', error.message);
     return res.status(500).render('error', {
       message: 'Internal Server Error',
       error,
@@ -307,7 +299,6 @@ const updateProfile = async (req, res) => {
 
     return res.redirect('/api/v1/admin/dashboard');
   } catch (error) {
-    console.error('Error updating profile:', error.message);
     return res.status(500).render('error', {
       message: 'Internal Server Error',
       error,
@@ -323,7 +314,6 @@ const getCreateUserPage = async (req, res) => {
       currentUser,
     });
   } catch (error) {
-    console.error('Error loading create user page:', error.message);
     return res.status(500).render('error', {
       message: 'Internal Server Error',
       error,
@@ -336,7 +326,6 @@ const createUser = async (req, res) => {
     const currentUser = req.session.user;
     const { username, password, email } = req.body;
 
-    // Validate input
     if (!username || !password) {
       return res.status(400).render('create-user.ejs', {
         error: 'Username and password are required.',
@@ -344,7 +333,6 @@ const createUser = async (req, res) => {
       });
     }
 
-    // Check existing username
     const existingUser = await User.findOne({ username });
     if (existingUser) {
       return res.status(400).render('create-user.ejs', {
@@ -353,10 +341,8 @@ const createUser = async (req, res) => {
       });
     }
 
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create new user with assigned role from middleware
     const newUser = new User({
       username,
       email,
@@ -366,12 +352,8 @@ const createUser = async (req, res) => {
 
     await newUser.save();
 
-    console.log(`User ${username} created by ${currentUser.username}`);
-
-    // Redirect back to user list with success query
     return res.redirect('/api/v1/admin/users');
   } catch (error) {
-    console.error('Error creating user:', error.message);
     return res.status(500).render('error', {
       message: 'Internal Server Error',
       error,
@@ -396,7 +378,6 @@ const getUserById = async (req, res) => {
       userById,
     });
   } catch (error) {
-    console.error('Error fetching user details:', error.message);
     return res.status(500).render('error', {
       message: 'Internal Server Error',
       error,
@@ -428,11 +409,8 @@ const updateUser = async (req, res) => {
 
     await User.findByIdAndUpdate(id, updateData);
 
-    console.log(`Updated user ${id} by ${currentUser.username}`);
-
     return res.redirect('/api/v1/admin/users');
   } catch (error) {
-    console.error('Error updating user:', error.message);
     return res.status(500).render('error', {
       message: 'Internal Server Error',
       error,
@@ -445,7 +423,6 @@ const getChangePasswordPage = async (req, res) => {
     const currentUser = req.session.user;
     const { id } = req.params;
     const userById = await User.findById(id).lean();
-    // console.log(userById);
     if (!userById) {
       return res.status(404).render('error', {
         message: 'User not found.',
@@ -457,7 +434,6 @@ const getChangePasswordPage = async (req, res) => {
       userById,
     });
   } catch (err) {
-    console.error('Error loading change password page:', err.message);
     return res.status(500).render('error', {
       message: 'Internal Server Error',
     });
@@ -474,11 +450,8 @@ const changePassword = async (req, res) => {
 
     await User.findByIdAndUpdate(id, { password: hashedPassword });
 
-    console.log(`Password of user ${id} changed by ${currentUser.username}`);
-
     return res.redirect('/api/v1/admin/users');
   } catch (error) {
-    console.error('Error changing password:', error.message);
     return res.status(500).render('error', {
       message: 'Internal Server Error',
       error,
@@ -488,15 +461,12 @@ const changePassword = async (req, res) => {
 
 const deleteUser = async (req, res) => {
   try {
-    const currentUser = req.session.user;
     const userToDelete = req.userToDelete;
 
     await userToDelete.deleteOne();
-    console.log(`Deleted user ${userToDelete._id} by ${currentUser.username}`);
 
     return res.redirect('/api/v1/admin/users');
   } catch (error) {
-    console.error('Error deleting user:', error.message);
     return res.status(500).render('error', {
       message: 'Internal Server Error',
       error,
@@ -509,19 +479,16 @@ const createProject = async (req, res) => {
     const { title, tech, description, live, github } = req.body;
     let imageUrl = '';
 
-    // 1. Handle image upload if a file is provided
     if (req.file) {
       const result = await cloudinary.uploader.upload(req.file.path, {
         folder: 'projects',
       });
       imageUrl = result.secure_url;
 
-      // Cleanup local temp file
       fs.unlinkSync(req.file.path);
     }
 
-    // 2. Create and save project record
-    const newProject = await Project.create({
+    await Project.create({
       title,
       tech,
       description,
@@ -530,16 +497,12 @@ const createProject = async (req, res) => {
       imageUrl: imageUrl,
     });
 
-    console.log(`Project "${title}" created by ${req.session.user.username}`);
-
     return res.redirect('/api/v1/admin/projects');
   } catch (error) {
-    // 3. Robust error handling and cleanup
     if (req.file && fs.existsSync(req.file.path)) {
       fs.unlinkSync(req.file.path);
     }
 
-    console.error('Project creation failed:', error.message);
     return res.status(500).render('error', {
       message: 'Failed to create project',
       error,
@@ -547,7 +510,6 @@ const createProject = async (req, res) => {
   }
 };
 
-//projects
 const getProjectById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -560,14 +522,11 @@ const getProjectById = async (req, res) => {
       });
     }
 
-    console.log(`Fetched project ${id} by ${req.session.user.username}`);
-
     return res.render('project-detail', {
       project,
       currentUser: req.session.user,
     });
   } catch (error) {
-    console.error('Error loading project detail:', error.message);
     return res.status(500).render('error', {
       message: 'Internal Server Error',
       error,
@@ -580,7 +539,6 @@ const updateProject = async (req, res) => {
     const { id } = req.params;
     const { title, tech, live, github, description } = req.body;
 
-    // 1. Prepare update data
     const updateData = { title, tech, live, github };
 
     if (description) {
@@ -590,18 +548,15 @@ const updateProject = async (req, res) => {
         .filter((d) => d);
     }
 
-    // 2. Handle image update with Cloudinary
     if (req.file) {
       const result = await cloudinary.uploader.upload(req.file.path, {
         folder: 'projects',
       });
       updateData.imageUrl = result.secure_url;
 
-      // Remove temp file
       fs.unlinkSync(req.file.path);
     }
 
-    // 3. Update database
     const updatedProject = await Project.findByIdAndUpdate(
       id,
       { $set: updateData },
@@ -612,15 +567,12 @@ const updateProject = async (req, res) => {
       return res.status(404).render('error', { message: 'Project not found' });
     }
 
-    console.log(`Project ${id} updated by ${req.session.user.username}`);
     return res.redirect('/api/v1/admin/projects?success=true');
   } catch (error) {
-    // Cleanup if upload failed
     if (req.file && fs.existsSync(req.file.path)) {
       fs.unlinkSync(req.file.path);
     }
 
-    console.error('Update failed:', error.message);
     return res.status(500).render('error', {
       message: 'Failed to update project',
       error,
@@ -641,11 +593,8 @@ const deleteProject = async (req, res) => {
       });
     }
 
-    console.log(`Deleted project ${id} by ${req.session.user.username}`);
-
     return res.redirect('/api/v1/admin/projects');
   } catch (error) {
-    console.error('Error deleting project:', error.message);
     return res.status(500).render('error', {
       message: 'Internal Server Error',
       error,
@@ -668,13 +617,8 @@ const createVocabulary = async (req, res) => {
 
     await newVocabulary.save();
 
-    console.log(
-      `Created new vocabulary "${word}" by ${req.session.user.username}`,
-    );
-
     return res.redirect('/api/v1/admin/dictionary');
   } catch (error) {
-    console.error('Error creating vocabulary:', error.message);
     return res.status(500).render('error', {
       message: 'Internal Server Error',
       error,
@@ -715,7 +659,6 @@ const exportDictionary = async (req, res) => {
 
     res.send(excelBuffer);
   } catch (error) {
-    console.error('Error exporting excel:', error);
     res.status(500).send('Internal Server Error');
   }
 };
@@ -733,15 +676,11 @@ const getVocabById = async (req, res) => {
       });
     }
 
-    console.log(`Fetched vocabulary ${id} by ${req.session.user.username}`);
-
     return res.render('vocabulary-detail', {
       vocabulary,
       currentUser: req.session.user,
     });
   } catch (error) {
-    console.error('Error fetching vocabulary details:', error.message);
-
     return res.status(500).render('error', {
       message: 'Internal Server Error',
       error,
@@ -776,11 +715,8 @@ const updateVocab = async (req, res) => {
       });
     }
 
-    console.log(`Updated vocabulary ${id} by ${req.session.user.username}`);
-
     return res.redirect('/api/v1/admin/dictionary');
   } catch (error) {
-    console.error('Error updating vocabulary:', error.message);
     return res.status(500).render('error', {
       message: 'Internal Server Error',
       error,
@@ -799,13 +735,8 @@ const deleteVocab = async (req, res) => {
       });
     }
 
-    console.log(
-      `Deleted vocabulary ${req.params.id} by ${req.session.user.username}`,
-    );
-
     return res.redirect('/api/v1/admin/dictionary');
   } catch (error) {
-    console.error('Error deleting vocabulary:', error.message);
     return res.status(500).render('error', {
       message: 'Internal Server Error',
       error,
@@ -833,7 +764,6 @@ const importVocab = async (req, res) => {
       det: 'determiner',
     };
 
-    // Mapping Excel header ➔ schema field
     const keyMap = {
       Word: 'word',
       Pronunciation: 'pronunciation',
@@ -872,24 +802,14 @@ const importVocab = async (req, res) => {
         item.word && item.pronunciation && item.partOfSpeech && item.meaning,
     );
 
-    const skipped = formattedData.length - validData.length;
-
     if (validData.length > 0) {
       await Vocabulary.insertMany(validData);
     }
 
     fs.unlinkSync(filePath);
 
-    console.log(
-      `Imported ${validData.length} vocabulary items by ${req.session.user.username}`,
-    );
-    if (skipped > 0) {
-      console.log(`Skipped ${skipped} rows due to missing required fields`);
-    }
-
     return res.redirect('/api/v1/admin/dictionary');
   } catch (error) {
-    console.error('Error importing excel:', error);
     return res.status(500).render('error', {
       message: 'Internal Server Error',
       error,
@@ -908,8 +828,6 @@ const getPortfolioData = async (req, res) => {
       portfolio,
     });
   } catch (error) {
-    console.error('Error loading portfolio:', error.message);
-
     return res.status(500).render('error', {
       message: 'Internal Server Error',
       error,
@@ -933,7 +851,6 @@ const createPortfolioData = async (req, res) => {
       socialUrls,
     } = req.body;
 
-    // Xử lý mảng Skills (Category & Items)
     let formattedSkills = [];
     if (skillCategories && skillItems) {
       const categories = Array.isArray(skillCategories)
@@ -954,7 +871,6 @@ const createPortfolioData = async (req, res) => {
         .filter((s) => s.category);
     }
 
-    // Xử lý Interests (Chuyển chuỗi thành mảng)
     const formattedInterests = interests
       ? interests
           .split(',')
@@ -962,7 +878,6 @@ const createPortfolioData = async (req, res) => {
           .filter(Boolean)
       : [];
 
-    // Xử lý Social Links (GitHub, LinkedIn...)
     let formattedSocialLinks = [];
     if (socialNames && socialUrls) {
       const names = Array.isArray(socialNames) ? socialNames : [socialNames];
@@ -994,7 +909,6 @@ const createPortfolioData = async (req, res) => {
 
     return res.redirect('/api/v1/admin/portfolio');
   } catch (error) {
-    console.error('Create Portfolio Error:', error.message);
     return res.status(500).send('Creation Error: ' + error.message);
   }
 };
@@ -1087,7 +1001,6 @@ const updatePortfolio = async (req, res) => {
 
     return res.redirect('/api/v1/admin/portfolio');
   } catch (error) {
-    console.error('Update Portfolio Error:', error.message);
     return res.status(500).send('Update Error: ' + error.message);
   }
 };
@@ -1102,7 +1015,7 @@ const getAdminContactMessages = async (req, res) => {
     const totalPages = Math.ceil(totalMessages / limit);
 
     const messages = await Contact.find({})
-      .sort({ createdAt: -1 }) // Show newest messages first
+      .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
 
@@ -1145,11 +1058,9 @@ export default {
   changePassword,
   deleteUser,
   createProject,
-  //projects
   getProjectById,
   updateProject,
   deleteProject,
-  //dictionary
   createVocabulary,
   exportDictionary,
   getVocabById,
@@ -1157,12 +1068,10 @@ export default {
   deleteVocab,
   importVocab,
   getUserVocabularies,
-  //portfolio
   getPortfolioData,
   createPortfolioData,
   getEditPortfolioPage,
   updatePortfolio,
-  //contact
   getAdminContactMessages,
   deleteContactMessage,
 };
