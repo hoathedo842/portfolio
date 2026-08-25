@@ -45,10 +45,13 @@ document.addEventListener('DOMContentLoaded', function () {
       const result = await response.json();
 
       if (response.ok && result.success) {
-        formResponse.className = 'mt-3 text-center fw-semibold text-success';
-        formResponse.textContent = result.message;
         contactForm.reset();
         phoneInput.setNumber('');
+
+        const successModal = new bootstrap.Modal(
+          document.getElementById('successModal'),
+        );
+        successModal.show();
       } else {
         formResponse.className = 'mt-3 text-center fw-semibold text-danger';
         formResponse.textContent =

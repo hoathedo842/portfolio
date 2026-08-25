@@ -1,3 +1,14 @@
+/* Sticky Navbar Fix */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 76px;
+}
+
+/* Uncomment below if using fixed-top instead of sticky-top */
+/* body {
+  padding-top: 76px; 
+} */
+
 /* Root Variables */
 :root {
   /* Navbar */
