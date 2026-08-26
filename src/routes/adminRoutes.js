@@ -1,14 +1,6 @@
 import express from 'express';
-import bcrypt from 'bcryptjs';
-import User from '../models/User.js';
-import Project from '../models/Project.js';
-import Vocabulary from '../models/Vocabulary.js';
-import Portfolio from '../models/Portfolio.js';
 import upload from '../middlewares/upload.js';
 import auth from '../middlewares/auth.js';
-import path from 'path';
-import xlsx from 'xlsx';
-import fs from 'fs';
 
 import adminController from '../controllers/adminController.js';
 
@@ -40,13 +32,6 @@ router.get(
   auth.authSignin,
   auth.checkAdmin,
   adminController.getDictionaryPage,
-);
-
-router.get(
-  '/statistics',
-  auth.authSignin,
-  auth.checkAdmin,
-  adminController.getStatisticsPage,
 );
 
 router.get('/users/profile', auth.authSignin, adminController.getProfilePage);

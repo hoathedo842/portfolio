@@ -128,36 +128,6 @@ const getProjectsPage = async (req, res) => {
   }
 };
 
-const getPaginationRange = (currentPage, totalPages) => {
-  const delta = 2;
-  const range = [];
-  const rangeWithDots = [];
-  let l;
-
-  for (let i = 1; i <= totalPages; i++) {
-    if (
-      i === 1 ||
-      i === totalPages ||
-      (i >= currentPage - delta && i <= currentPage + delta)
-    ) {
-      range.push(i);
-    }
-  }
-
-  for (let i of range) {
-    if (l) {
-      if (i - l === 2) {
-        rangeWithDots.push(l + 1);
-      } else if (i - l !== 1) {
-        rangeWithDots.push('...');
-      }
-    }
-    rangeWithDots.push(i);
-    l = i;
-  }
-  return rangeWithDots;
-};
-
 const getDictionaryPage = async (req, res) => {
   try {
     const currentUser = req.session.user;
@@ -229,28 +199,6 @@ const getUserVocabularies = async (req, res) => {
       currentUser,
       user,
       vocabularies,
-    });
-  } catch (error) {
-    return res.status(500).render('error', {
-      message: 'Internal Server Error',
-      error,
-    });
-  }
-};
-
-const getStatisticsPage = async (req, res) => {
-  try {
-    const currentUser = req.session.user;
-
-    const totalUsers = await User.countDocuments();
-    const totalVocabulary = await Vocabulary.countDocuments();
-    const totalProjects = await Project.countDocuments();
-
-    return res.render('admin-statistics', {
-      currentUser,
-      totalUsers,
-      totalVocabulary,
-      totalProjects,
     });
   } catch (error) {
     return res.status(500).render('error', {
@@ -1041,13 +989,41 @@ const deleteContactMessage = async (req, res) => {
   }
 };
 
+const getPaginationRange = (currentPage, totalPages) => {
+  const delta = 2;
+  const range = [];
+  const rangeWithDots = [];
+  let l;
+
+  for (let i = 1; i <= totalPages; i++) {
+    if (
+      i === 1 ||
+      i === totalPages ||
+      (i >= currentPage - delta && i <= currentPage + delta)
+    ) {
+      range.push(i);
+    }
+  }
+
+  for (let i of range) {
+    if (l) {
+      if (i - l === 2) {
+        rangeWithDots.push(l + 1);
+      } else if (i - l !== 1) {
+        rangeWithDots.push('...');
+      }
+    }
+    rangeWithDots.push(i);
+    l = i;
+  }
+  return rangeWithDots;
+};
+
 export default {
   getAdminDashboard,
   getUsersPage,
   getProjectsPage,
-  getPaginationRange,
   getDictionaryPage,
-  getStatisticsPage,
   getProfilePage,
   updateProfile,
   getCreateUserPage,
@@ -1074,4 +1050,5 @@ export default {
   updatePortfolio,
   getAdminContactMessages,
   deleteContactMessage,
+  getPaginationRange,
 };

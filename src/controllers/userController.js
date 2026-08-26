@@ -5,6 +5,35 @@ import xlsx from 'xlsx';
 import fs from 'fs';
 import bcrypt from 'bcryptjs';
 
+const getPaginationRange = (currentPage, totalPages) => {
+  const delta = 2;
+  const range = [];
+  const rangeWithDots = [];
+  let l;
+
+  range.push(1);
+  for (let i = currentPage - delta; i <= currentPage + delta; i++) {
+    if (i < totalPages && i > 1) {
+      range.push(i);
+    }
+  }
+  range.push(totalPages);
+
+  for (let i of range) {
+    if (l) {
+      if (i - l === 2) {
+        rangeWithDots.push(l + 1);
+      } else if (i - l !== 1) {
+        rangeWithDots.push('...');
+      }
+    }
+    rangeWithDots.push(i);
+    l = i;
+  }
+
+  return rangeWithDots;
+};
+
 const getMyDashboard = async (req, res) => {
   try {
     const currentUser = req.session.user;
@@ -36,6 +65,7 @@ const getMyDashboard = async (req, res) => {
     ]);
 
     const totalPages = Math.ceil(totalVocabularies / limit);
+    const paginationRange = getPaginationRange(pageNum, totalPages);
 
     return res.render('users', {
       currentUser,
@@ -44,6 +74,7 @@ const getMyDashboard = async (req, res) => {
       totalPages,
       currentPage: pageNum,
       search: searchQuery,
+      paginationRange,
     });
   } catch (error) {
     return res.status(500).render('error', {
@@ -68,7 +99,7 @@ const createVocabulary = async (req, res) => {
 
     await newVocabulary.save();
 
-    return res.redirect('/api/v1/user/dashboard');
+    return res.redirect('/api/v1/user/dashboard?success=true');
   } catch (error) {
     return res.status(500).render('error', {
       message: 'Internal Server Error',
@@ -80,7 +111,6 @@ const createVocabulary = async (req, res) => {
 const getProfilePage = async (req, res) => {
   try {
     const currentUser = req.session.user;
-
     const user = await User.findById(currentUser._id).lean();
 
     if (!user) {
@@ -114,7 +144,7 @@ const updateProfile = async (req, res) => {
 
     req.session.user = updatedUser;
 
-    return res.redirect('/api/v1/user/dashboard');
+    return res.redirect('/api/v1/user/dashboard?success=true');
   } catch (error) {
     return res.status(500).render('error', {
       message: 'Internal Server Error',
@@ -187,7 +217,7 @@ const importVocab = async (req, res) => {
 
     fs.unlinkSync(filePath);
 
-    return res.redirect('/api/v1/user/dashboard');
+    return res.redirect('/api/v1/user/dashboard?success=true');
   } catch (error) {
     return res.status(500).render('error', {
       message: 'Internal Server Error',
@@ -198,7 +228,9 @@ const importVocab = async (req, res) => {
 
 const exportDictionary = async (req, res) => {
   try {
-    const vocabularies = await Vocabulary.find({}).lean();
+    const vocabularies = await Vocabulary.find({
+      createdBy: req.session.user._id,
+    }).lean();
 
     const data = vocabularies.map((vocab) => ({
       Word: vocab.word,
@@ -219,7 +251,7 @@ const exportDictionary = async (req, res) => {
 
     res.setHeader(
       'Content-Disposition',
-      'attachment; filename="dictionary_export.xlsx"',
+      'attachment; filename="my_dictionary_export.xlsx"',
     );
 
     res.setHeader(
@@ -236,8 +268,10 @@ const exportDictionary = async (req, res) => {
 const getVocabById = async (req, res) => {
   try {
     const { id } = req.params;
-
-    const vocabulary = await Vocabulary.findById(id);
+    const vocabulary = await Vocabulary.findOne({
+      _id: id,
+      createdBy: req.session.user._id,
+    });
 
     if (!vocabulary) {
       return res.status(404).render('error', {
@@ -263,8 +297,8 @@ const updateVocab = async (req, res) => {
     const { id } = req.params;
     const { word, pronunciation, partOfSpeech, meaning, examples } = req.body;
 
-    const updated = await Vocabulary.findByIdAndUpdate(
-      id,
+    const updated = await Vocabulary.findOneAndUpdate(
+      { _id: id, createdBy: req.session.user._id },
       {
         word,
         pronunciation,
@@ -285,7 +319,7 @@ const updateVocab = async (req, res) => {
       });
     }
 
-    return res.redirect('/api/v1/user/dashboard');
+    return res.redirect('/api/v1/user/dashboard?success=true');
   } catch (error) {
     return res.status(500).render('error', {
       message: 'Internal Server Error',
@@ -296,7 +330,10 @@ const updateVocab = async (req, res) => {
 
 const deleteVocab = async (req, res) => {
   try {
-    const deleted = await Vocabulary.findByIdAndDelete(req.params.id);
+    const deleted = await Vocabulary.findOneAndDelete({
+      _id: req.params.id,
+      createdBy: req.session.user._id,
+    });
 
     if (!deleted) {
       return res.status(404).render('error', {
@@ -305,7 +342,7 @@ const deleteVocab = async (req, res) => {
       });
     }
 
-    return res.redirect('/api/v1/user/dashboard');
+    return res.redirect('/api/v1/user/dashboard?success=true');
   } catch (error) {
     return res.status(500).render('error', {
       message: 'Internal Server Error',
@@ -365,7 +402,7 @@ const changePassword = async (req, res) => {
     user.password = hashedPassword;
     await user.save();
 
-    return res.redirect('/api/v1/user/dashboard');
+    return res.redirect('/api/v1/user/dashboard?success=true');
   } catch (error) {
     return res.status(500).render('error', {
       message: 'Internal Server Error',
