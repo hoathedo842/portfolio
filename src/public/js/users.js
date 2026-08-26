@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+  // 1. Sidebar toggle and Account dropdown menu logic
   const toggleBtn = document.getElementById('sidebarToggle');
   const sidebar = document.getElementById('sidebarMenu');
 
@@ -30,6 +31,35 @@ document.addEventListener('DOMContentLoaded', () => {
       ) {
         accountMenu.style.display = 'none';
       }
+    });
+  }
+
+  // 2. Show success alert banner if query param ?success=true exists
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('success') === 'true') {
+    const successAlert = document.getElementById('successAlert');
+    if (successAlert) {
+      successAlert.style.display = 'block';
+      setTimeout(() => {
+        successAlert.style.display = 'none';
+      }, 4000);
+    }
+  }
+
+  // 3. Handle custom delete modal state binding and action routing
+  const deleteButtons = document.querySelectorAll('.delete-btn');
+  const deleteForm = document.getElementById('deleteForm');
+  const deleteModalElement = document.getElementById('deleteConfirmModal');
+
+  if (deleteModalElement && deleteForm) {
+    const deleteModal = new bootstrap.Modal(deleteModalElement);
+
+    deleteButtons.forEach((button) => {
+      button.addEventListener('click', function () {
+        const vocabId = this.getAttribute('data-id');
+        deleteForm.action = `/api/v1/user/dictionary/${vocabId}?_method=DELETE`;
+        deleteModal.show();
+      });
     });
   }
 });
