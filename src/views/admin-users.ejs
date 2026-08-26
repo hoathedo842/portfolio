@@ -3,278 +3,344 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Users Management</title>
-
-    <!-- Reset CSS -->
+    <title>User Management</title>
     <link rel="stylesheet" href="/css/reset.css" />
-
-    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css" />
-
-    <!-- Plugin CSS (AOS) -->
+    <link rel="stylesheet" href="/font/bootstrap-icons.min.css" />
     <link rel="stylesheet" href="/css/aos.css" />
-
-    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/admin-dashboard.css" />
     <link rel="stylesheet" href="/css/admin-users.css" />
   </head>
 
   <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-dark bg-dark fixed-top custom-navbar">
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top navbar-custom">
       <div class="container-fluid">
+        <a class="navbar-brand" href="#">Admin Panel</a>
+
+        <!-- Toggle Button for mobile sidebar -->
         <button
-          class="navbar-toggler d-md-none"
+          class="btn btn-outline-light d-lg-none"
           type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#sidebarMenu"
-          aria-controls="sidebarMenu"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
+          id="sidebarToggle"
         >
-          <span class="navbar-toggler-icon"></span>
+          ☰
         </button>
-        <span class="navbar-brand">Admin Panel</span>
-        <div class="d-flex align-items-center gap-2">
-          <span class="text-white d-none d-sm-inline">
-            Welcome, <%= currentUser.username %> (<%= currentUser.firstName %> <%= currentUser.lastName %>)
-          </span>
-          <a
-            href="/api/v1/admin/portfolio"
-            class="btn btn-outline-warning btn-sm"
+
+        <!-- Welcome + Account Menu -->
+        <div class="ms-auto d-flex align-items-center gap-3 position-relative">
+          <div class="text-white fw-semibold d-none d-sm-block">
+            Welcome, <%= currentUser.username %>
+          </div>
+
+          <!-- Account Button -->
+          <button
+            id="accountToggle"
+            class="btn btn-outline-light btn-sm account-toggle"
+            style="min-width: 90px"
           >
-            📁 Portfolio
-          </a>
-          <a
-            href="/api/v1/admin/users/profile"
-            class="btn btn-outline-light btn-sm"
+            Account
+          </button>
+
+          <!-- Custom Menu -->
+          <div
+            class="account-menu position-absolute"
+            id="accountMenu"
+            style="display: none"
           >
-            Update Info
-          </a>
-          <form action="/api/v1/auth/signout" method="POST" class="mb-0">
-            <button type="submit" class="btn btn-outline-light btn-sm">
-              Sign Out
-            </button>
-          </form>
+            <a class="dropdown-item" href="/api/v1/admin/users/profile">
+              Update Info
+            </a>
+            <form action="/api/v1/auth/signout" method="POST" class="mb-0">
+              <button type="submit" class="dropdown-item">Sign Out</button>
+            </form>
+          </div>
         </div>
       </div>
     </nav>
 
-    <div class="container-fluid">
-      <div class="row">
-        <!-- Sidebar -->
-        <nav
-          id="sidebarMenu"
-          class="col-md-3 col-lg-2 d-md-block sidebar collapse pt-5 custom-sidebar"
-        >
-          <div class="position-sticky">
-            <ul class="nav flex-column">
-              <li class="nav-item">
-                <a class="nav-link" href="/api/v1/admin/dashboard"
-                  >🏠 Dashboard</a
-                >
-              </li>
-              <li class="nav-item">
-                <a class="nav-link active" href="/api/v1/admin/users"
-                  >👥 User Management</a
-                >
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/api/v1/admin/projects"
-                  >📁 Projects</a
-                >
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/api/v1/admin/dictionary"
-                  >📚 Dictionary</a
-                >
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/api/v1/admin/portfolio"
-                  >⚙️ Portfolio Data</a
-                >
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/api/v1/admin/statistics"
-                  >📈 Statistics</a
-                >
-              </li>
-            </ul>
-          </div>
-        </nav>
+    <!-- Sidebar -->
+    <nav
+      id="sidebarMenu"
+      class="sidebar-custom sidebar-fixed sidebar-slide d-lg-block"
+    >
+      <ul class="nav flex-column px-3 pt-4">
+        <li class="nav-item">
+          <a class="nav-link" href="/api/v1/admin/dashboard">Dashboard</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" href="/api/v1/admin/users">User Management</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/api/v1/admin/projects">Projects</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/api/v1/admin/dictionary">Dictionary</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/api/v1/admin/portfolio">Portfolio Data</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/api/v1/admin/contact">Contact Messages</a>
+        </li>
+      </ul>
+    </nav>
 
-        <!-- Main Content -->
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 pt-5">
-          <div class="pt-3">
-            <h2>Users Management</h2>
+    <!-- Main Content -->
+    <main class="main-content-fixed">
+      <div class="container-fluid pt-5">
+        
+        <!-- Success Alert Banner -->
+        <div id="successAlert" class="alert alert-success alert-dismissible fade show shadow-sm" role="alert" style="display: none;">
+          <i class="bi bi-check-circle-fill me-2"></i> Action completed successfully!
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
 
-            <!-- Add User -->
-            <div class="my-3">
-              <a
-                href="/api/v1/admin/users/create"
-                class="btn btn-success btn-sm"
-                >➕ Add User</a
-              >
-            </div>
-
-            <!-- Search Form -->
-            <form action="/api/v1/admin/users" method="get" class="d-flex mb-4">
-              <input
-                type="text"
-                name="search"
-                value="<%= search || '' %>"
-                class="form-control me-2"
-                placeholder="Search username or email"
-              />
-              <button type="submit" class="btn btn-primary">🔍 Search</button>
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pt-4 gap-3">
+          <h2 class="mb-0">User Management</h2>
+          
+          <!-- Search Form & Add Button -->
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <form action="/api/v1/admin/users" method="GET" class="d-flex gap-2">
+              <div class="input-group">
+                <input type="text" class="form-control" name="search" placeholder="Search username..." value="<%= typeof search !== 'undefined' ? search : '' %>">
+                <button class="btn btn-outline-success bg-white" type="submit" title="Search">
+                  <i class="bi bi-search"></i>
+                </button>
+                <% if (typeof search !== 'undefined' && search) { %>
+                  <a href="/api/v1/admin/users" class="btn btn-outline-secondary" title="Clear Search">
+                    <i class="bi bi-x-lg"></i>
+                  </a>
+                <% } %>
+              </div>
             </form>
 
-            <!-- User Table Card -->
-            <div class="card mb-4 custom-card">
-              <div class="card-header">User List (<%= totalUsers %>)</div>
-              <div class="card-body">
-                <a href="/api/v1/admin/users" class="btn btn-secondary mb-3"
-                  >🔄 Reload List</a
-                >
-                <% if (users.length === 0) { %>
-                <p class="text-muted">No users found.</p>
-                <% } else { %>
-                <div class="table-responsive">
-                  <table
-                    class="table table-bordered table-hover custom-table align-middle"
-                  >
-                    <thead class="table-dark">
-                      <tr>
-                        <th>#</th>
-                        <th>Username</th>
-                        <th>Email</th>
-                        <th>First Name</th>
-                        <th>Last Name</th>
-                        <th>Created</th>
-                        <th>Updated</th>
-                        <th>Role</th>
-                        <th>Actions</th>
-                        <th>Password</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <% users.forEach((user, index) => { %>
-                      <tr>
-                        <td><%= index + 1 + (currentPage - 1) * 10 %></td>
-                        <td><%= user.username %></td>
-                        <td>
-                          <span
-                            class="d-inline-block text-truncate"
-                            style="max-width: 150px"
-                            title="<%= user.email %>"
-                          >
-                            <%= user.email %>
-                          </span>
-                        </td>
-                        <td><%= user.firstName %></td>
-                        <td><%= user.lastName %></td>
-                        <td>
-                          <%= new Date(user.createdAt).toLocaleDateString('vi-VN') %>
-                        </td>
-                        <td>
-                          <%= new Date(user.updatedAt).toLocaleDateString('vi-VN') %>
-                        </td>
-                        <td>
-                          <% if (user.role === 0) { %>
-                          <span class="badge bg-danger">Super Admin</span>
-                          <% } else if (user.role === 1) { %>
-                          <span class="badge bg-primary">Admin</span>
-                          <% } else if (user.role === 2) { %>
-                          <span class="badge bg-success">User</span>
-                          <% } else if (user.role === 3) { %>
-                          <span class="badge bg-secondary">Guest</span>
-                          <% } else { %>
-                          <span class="badge bg-dark">Unknown</span>
-                          <% } %>
-                        </td>
-                        <td>
-                          <div class="btn-group btn-group-sm" role="group">
-                            <a
-                              href="/api/v1/admin/users/<%= user._id %>"
-                              class="btn btn-primary"
-                              title="Edit"
-                              >✏️</a
-                            >
-                            <a
-                              href="/api/v1/admin/users/<%= user._id %>/vocabularies"
-                              class="btn btn-sm btn-primary"
-                              >Vocabularies</a
-                            >
-                            <form
-                              action="/api/v1/admin/users/<%= user._id %>?_method=DELETE"
-                              method="post"
-                              onsubmit="return confirm('Are you sure to delete this user?');"
-                            >
-                              <button
-                                type="submit"
-                                class="btn btn-danger"
-                                title="Delete"
-                              >
-                                🗑️
-                              </button>
-                            </form>
-                          </div>
-                        </td>
-                        <td>
-                          <a
-                            href="/api/v1/admin/users/<%= user._id %>/change-password"
-                            class="btn btn-warning btn-sm"
-                            title="Change Password"
-                          >
-                            🔑
-                          </a>
-                        </td>
-                      </tr>
-                      <% }) %>
-                    </tbody>
-                  </table>
-                </div>
+            <button type="button" class="btn btn-success fw-semibold text-nowrap" data-bs-toggle="modal" data-bs-target="#addUserModal">
+              <i class="bi bi-plus-lg me-1"></i> Add New User
+            </button>
+          </div>
+        </div>
 
-                <!-- Pagination -->
-                <nav aria-label="User pagination">
-                  <ul class="pagination justify-content-center">
-                    <% if (currentPage > 1) { %>
-                    <li class="page-item">
-                      <a class="page-link" href="?page=<%= currentPage - 1 %>"
-                        >Previous</a
-                      >
-                    </li>
-                    <% } else { %>
-                    <li class="page-item disabled">
-                      <span class="page-link">Previous</span>
-                    </li>
-                    <% } %> <% for (let i = 1; i <= totalPages; i++) { %>
-                    <li
-                      class="page-item <%= currentPage === i ? 'active' : '' %>"
-                    >
-                      <a class="page-link" href="?page=<%= i %>"><%= i %></a>
-                    </li>
-                    <% } %> <% if (currentPage < totalPages) { %>
-                    <li class="page-item">
-                      <a class="page-link" href="?page=<%= currentPage + 1 %>"
-                        >Next</a
-                      >
-                    </li>
-                    <% } else { %>
-                    <li class="page-item disabled">
-                      <span class="page-link">Next</span>
-                    </li>
-                    <% } %>
-                  </ul>
-                </nav>
-                <% } %>
+        <% 
+          const totalUsersCount = users ? users.length : 0;
+          const superAdminCount = users ? users.filter(u => u.role === 0).length : 0;
+          const adminCount = users ? users.filter(u => u.role === 1).length : 0;
+          const regularUserCount = users ? users.filter(u => u.role === 2).length : 0;
+          const guestCount = users ? users.filter(u => u.role === 3).length : 0;
+        %>
+
+        <!-- Stats Cards -->
+        <div class="row stats-cards mb-4">
+          <div class="col-md-3 mb-3">
+            <div class="card h-100">
+              <div class="card-body">
+                <h5 class="card-title fw-bold">Total Users</h5>
+                <p class="card-text fs-4"><%= totalUsersCount %></p>
               </div>
             </div>
           </div>
-        </main>
+          <div class="col-md-3 mb-3">
+            <div class="card h-100">
+              <div class="card-body">
+                <h5 class="card-title fw-bold text-danger">Super Admins</h5>
+                <p class="card-text fs-4 text-danger"><%= superAdminCount %></p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 mb-3">
+            <div class="card h-100">
+              <div class="card-body">
+                <h5 class="card-title fw-bold text-success">Admins</h5>
+                <p class="card-text fs-4 text-success"><%= adminCount %></p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 mb-3">
+            <div class="card h-100">
+              <div class="card-body">
+                <h5 class="card-title fw-bold text-primary">Users / Guests</h5>
+                <p class="card-text fs-4 text-primary"><%= regularUserCount + guestCount %></p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- User Table Card -->
+        <div class="card mb-4 user-table">
+          <div class="card-header">User List</div>
+          <div class="card-body">
+            <% if (!users || users.length === 0) { %>
+              <p class="text-muted text-center py-3">No users found.</p>
+            <% } else { %>
+              <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle">
+                  <thead>
+                    <tr>
+                      <th style="width: 50px;">#</th>
+                      <th>Username</th>
+                      <th>Full Name</th>
+                      <th>Email</th>
+                      <th>Role</th>
+                      <th style="width: 120px;" class="text-center">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% users.forEach((user, index) => { %>
+                      <tr>
+                        <td><%= index + 1 + (currentPage - 1) * 10 %></td>
+                        <td class="fw-semibold text-dark"><%= user.username %></td>
+                        <td><%= (user.firstName || '') + ' ' + (user.lastName || '') %></td>
+                        <td><%= user.email %></td>
+                        <td>
+                          <% if (user.role === 0) { %>
+                            <span class="badge bg-danger">SuperAdmin</span>
+                          <% } else if (user.role === 1) { %>
+                            <span class="badge bg-success">Admin</span>
+                          <% } else if (user.role === 2) { %>
+                            <span class="badge bg-primary">User</span>
+                          <% } else if (user.role === 3) { %>
+                            <span class="badge bg-secondary">Guest</span>
+                          <% } else { %>
+                            <span class="badge bg-dark">Unknown</span>
+                          <% } %>
+                        </td>
+                        <td class="text-center">
+                          <a href="/api/v1/admin/users/edit/<%= user._id %>" class="btn btn-sm btn-outline-primary me-1" title="Edit">
+                            <i class="bi bi-pencil-square"></i>
+                          </a>
+                          <% if (currentUser._id.toString() !== user._id.toString()) { %>
+                            <button type="button" class="btn btn-sm btn-outline-danger delete-btn" data-id="<%= user._id %>" title="Delete">
+                              <i class="bi bi-trash"></i>
+                            </button>
+                          <% } else { %>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" disabled title="Cannot delete yourself">
+                              <i class="bi bi-trash"></i>
+                            </button>
+                          <% } %>
+                        </td>
+                      </tr>
+                    <% }) %>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Smart Pagination Section -->
+              <% if (typeof totalPages !== 'undefined' && totalPages > 1) { %>
+                <nav aria-label="User navigation" class="mt-4">
+                  <ul class="pagination justify-content-center mb-0 flex-wrap">
+                    <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+                      <a class="page-link" href="/api/v1/admin/users?page=<%= currentPage - 1 %><%= search ? '&search=' + search : '' %>">&laquo;</a>
+                    </li>
+
+                    <% if (typeof paginationRange !== 'undefined') { %>
+                      <% paginationRange.forEach(i => { %>
+                        <% if (i === '...') { %>
+                          <li class="page-item disabled"><span class="page-link">...</span></li>
+                        <% } else { %>
+                          <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                            <a class="page-link" href="/api/v1/admin/users?page=<%= i %><%= search ? '&search=' + search : '' %>"><%= i %></a>
+                          </li>
+                        <% } %>
+                      <% }) %>
+                    <% } %>
+
+                    <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+                      <a class="page-link" href="/api/v1/admin/users?page=<%= currentPage + 1 %><%= search ? '&search=' + search : '' %>">&raquo;</a>
+                    </li>
+                  </ul>
+                </nav>
+              <% } %>
+
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- MODAL: ADD NEW USER -->
+    <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+          <div class="modal-header bg-light">
+            <h5 class="modal-title fw-bold" id="addUserModalLabel">Add New User</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <form action="/api/v1/admin/users" method="POST">
+            <div class="modal-body p-4">
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="username" class="form-label fw-semibold">Username <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control" id="username" name="username" placeholder="e.g. johndoe" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="email" class="form-label fw-semibold">Email <span class="text-danger">*</span></label>
+                  <input type="email" class="form-control" id="email" name="email" placeholder="e.g. john@example.com" required>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label for="password" class="form-label fw-semibold">Password <span class="text-danger">*</span></label>
+                <input type="password" class="form-control" id="password" name="password" placeholder="Enter secure password" required>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="firstName" class="form-label fw-semibold">First Name</label>
+                  <input type="text" class="form-control" id="firstName" name="firstName" placeholder="e.g. John">
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="lastName" class="form-label fw-semibold">Last Name</label>
+                  <input type="text" class="form-control" id="lastName" name="lastName" placeholder="e.g. Doe">
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label for="role" class="form-label fw-semibold">User Role <span class="text-danger">*</span></label>
+                <select class="form-select" id="role" name="role" required>
+                  <option value="2" selected>User (Member)</option>
+                  <option value="3">Guest</option>
+                  <option value="1">Admin</option>
+                  <option value="0">SuperAdmin</option>
+                </select>
+                <div class="form-text">Select appropriate access permission level. Default is User.</div>
+              </div>
+            </div>
+            
+            <div class="modal-footer bg-light">
+              <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Cancel</button>
+              <button type="submit" class="btn btn-success fw-semibold px-4">Create User</button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
 
-    <!-- Bootstrap JS -->
+    <!-- MODAL: CONFIRM DELETION -->
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+          <div class="modal-header bg-danger text-white">
+            <h5 class="modal-title fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i> Confirm User Deletion</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body p-4 text-center">
+            <p class="fs-5 mb-1">Are you sure you want to delete this user?</p>
+            <p class="text-muted small">This action cannot be undone.</p>
+          </div>
+          <div class="modal-footer bg-light justify-content-center">
+            <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Cancel</button>
+            <form id="deleteForm" method="POST" class="d-inline">
+              <button type="submit" class="btn btn-danger fw-semibold">Yes, Delete</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- JS -->
     <script src="/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/admin-dashboard.js"></script>
+    <script src="/js/admin-users.js"></script>
   </body>
 </html>

@@ -4,19 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>User Dictionary Manager</title>
-
-    <!-- Reset CSS -->
     <link rel="stylesheet" href="/css/reset.css" />
-
-    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css" />
-
-    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="/font/bootstrap-icons.min.css" />
-
-    <!-- AOS Animation CSS -->
     <link rel="stylesheet" href="/css/aos.css" />
-
     <link rel="stylesheet" href="/css/users.css" />
   </head>
 
@@ -94,251 +85,272 @@
     <!-- Main Content -->
     <main class="main-content-fixed">
       <div class="container-fluid pt-5">
-        <h2 class="mb-4 pt-4">Dictionary Manager</h2>
+        
+        <!-- Success Alert Banner -->
+        <div id="successAlert" class="alert alert-success alert-dismissible fade show shadow-sm" role="alert" style="display: none;">
+          <i class="bi bi-check-circle-fill me-2"></i> Action completed successfully!
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
 
-        <!-- Add New Word & Import Excel Row -->
-        <div class="row mb-4">
-          <!-- Add New Word Card -->
-          <div class="col-lg-8 mb-3 mb-lg-0">
-            <div class="card h-100">
-              <div class="card-header fw-bold">Add New Word</div>
-              <div class="card-body">
-                <form
-                  action="/api/v1/user/dictionary"
-                  method="POST"
-                  class="row g-3"
-                >
-                  <div class="col-md-4">
-                    <input
-                      type="text"
-                      name="word"
-                      class="form-control"
-                      placeholder="Word"
-                      required
-                    />
-                  </div>
-                  <div class="col-md-4">
-                    <input
-                      type="text"
-                      name="pronunciation"
-                      class="form-control"
-                      placeholder="Pronunciation"
-                    />
-                  </div>
-                  <div class="col-md-4">
-                    <select name="partOfSpeech" class="form-select" required>
-                      <option value="">Part of Speech</option>
-                      <option>noun</option>
-                      <option>verb</option>
-                      <option>adjective</option>
-                      <option>adverb</option>
-                      <option>preposition</option>
-                      <option>conjunction</option>
-                      <option>interjection</option>
-                      <option>pronoun</option>
-                      <option>determiner</option>
-                    </select>
-                  </div>
-                  <div class="col-md-6">
-                    <input
-                      type="text"
-                      name="meaning"
-                      class="form-control"
-                      placeholder="Meaning"
-                      required
-                    />
-                  </div>
-                  <div class="col-md-6">
-                    <input
-                      type="text"
-                      name="examples"
-                      class="form-control"
-                      placeholder="Examples (comma separated)"
-                    />
-                  </div>
-                  <div class="col-12 text-end">
-                    <button type="submit" class="btn btn-primary btn-sm">
-                      <i class="bi bi-plus-lg me-1"></i> Add Word
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
+        <!-- Header Title & Action Buttons -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pt-4 gap-3">
+          <h2 class="mb-0">Dictionary Manager</h2>
+          
+          <!-- Trigger Buttons for Modals -->
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <button type="button" class="btn btn-success fw-semibold text-nowrap" data-bs-toggle="modal" data-bs-target="#addWordModal">
+              <i class="bi bi-plus-lg me-1"></i> Add New Word
+            </button>
+            <button type="button" class="btn btn-outline-success fw-semibold text-nowrap" data-bs-toggle="modal" data-bs-target="#importExcelModal">
+              <i class="bi bi-upload me-1"></i> Import Excel
+            </button>
           </div>
+        </div>
 
-          <!-- Import Excel Card -->
-          <div class="col-lg-4">
-            <div class="card h-100">
-              <div class="card-header fw-bold">Import from Excel</div>
-              <div class="card-body d-flex flex-column justify-content-center">
-                <form
-                  action="/api/v1/user/dictionary/import-excel"
-                  method="POST"
-                  enctype="multipart/form-data"
-                  class="vstack gap-3"
-                >
-                  <input
-                    type="file"
-                    name="file"
-                    class="form-control form-control-sm"
-                    accept=".xlsx,.xls"
-                    required
-                  />
-                  <button type="submit" class="btn btn-success btn-sm w-100">
-                    <i class="bi bi-upload me-1"></i> Upload File
-                  </button>
-                </form>
-              </div>
+        <!-- Search Form & Toolbar -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+          <form
+            action="/api/v1/user/dashboard"
+            method="GET"
+            class="d-flex gap-2 flex-grow-1"
+            style="max-width: 400px;"
+          >
+            <div class="input-group">
+              <input
+                type="text"
+                name="search"
+                value="<%= typeof search !== 'undefined' ? search : '' %>"
+                class="form-control"
+                placeholder="Search vocabulary..."
+              />
+              <button type="submit" class="btn btn-outline-success bg-white" title="Search">
+                <i class="bi bi-search"></i>
+              </button>
+              <% if (typeof search !== 'undefined' && search) { %>
+                <a href="/api/v1/user/dashboard" class="btn btn-outline-secondary" title="Clear Search">
+                  <i class="bi bi-x-lg"></i>
+                </a>
+              <% } %>
             </div>
+          </form>
+
+          <div class="d-flex gap-2 flex-wrap">
+            <a href="/api/v1/user/dashboard" class="btn btn-outline-secondary fw-semibold">
+              <i class="bi bi-arrow-clockwise me-1"></i> Reload List
+            </a>
+            <a href="/api/v1/user/dictionary/export-excel" class="btn btn-success fw-semibold">
+              <i class="bi bi-download me-1"></i> Export to Excel
+            </a>
           </div>
         </div>
 
         <!-- Vocabulary Table Card -->
-        <div class="card mb-4">
-          <div class="card-header d-flex justify-content-between align-items-center">
-            <span>Vocabularies (<%= totalVocabularies %>)</span>
-            <div class="d-flex gap-2">
-              <a href="/api/v1/user/dashboard" class="btn btn-secondary btn-sm">
-                <i class="bi bi-arrow-clockwise"></i> Reload
-              </a>
-              <a href="/api/v1/user/dictionary/export-excel" class="btn btn-success btn-sm">
-                <i class="bi bi-file-earmark-excel"></i> Export
-              </a>
-            </div>
+        <div class="card mb-4 border-0 shadow-sm">
+          <div class="card-header fw-bold">
+            Vocabularies (<%= totalVocabularies %>)
           </div>
           <div class="card-body">
-            <!-- Search Form -->
-            <form
-              action="/api/v1/user/dashboard"
-              method="get"
-              class="d-flex mb-4"
-            >
-              <input
-                type="text"
-                name="search"
-                value="<%= search || '' %>"
-                class="form-control me-2"
-                placeholder="Search vocabulary..."
-              />
-              <button type="submit" class="btn btn-primary">
-                <i class="bi bi-search"></i>
-              </button>
-            </form>
-
-            <% if (vocabularies.length === 0) { %>
-            <p class="text-muted">No entries found.</p>
+            <% if (!vocabularies || vocabularies.length === 0) { %>
+              <p class="text-muted text-center py-3">No entries found.</p>
             <% } else { %>
-            <div class="table-responsive">
-              <table class="table table-bordered table-hover align-middle">
-                <thead class="table-dark">
-                  <tr>
-                    <th>#</th>
-                    <th>Word</th>
-                    <th>Pronunciation</th>
-                    <th>Part of Speech</th>
-                    <th>Meaning</th>
-                    <th>Examples</th>
-                    <th>Updated</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <% vocabularies.forEach((vocab, index) => { %>
-                  <tr>
-                    <td><%= index + 1 + (currentPage - 1) * 10 %></td>
-                    <td class="fw-bold"><%= vocab.word %></td>
-                    <td><%= vocab.pronunciation %></td>
-                    <td><span class="badge bg-secondary"><%= vocab.partOfSpeech %></span></td>
-                    <td><%= vocab.meaning %></td>
-                    <td>
-                      <% if (Array.isArray(vocab.examples)) { %>
-                      <ul class="mb-0 ps-3">
-                        <% vocab.examples.forEach(ex => { %>
-                        <li><%= ex %></li>
-                        <% }) %>
-                      </ul>
-                      <% } else { %> <%= vocab.examples %> <% } %>
-                    </td>
-                    <td><%= new Date(vocab.updatedAt).toLocaleDateString('vi-VN') %></td>
-                    <td>
-                      <div class="btn-group btn-group-sm" role="group">
-                        <a
-                          href="/api/v1/user/dictionary/<%= vocab._id %>"
-                          class="btn btn-primary"
-                          title="Edit"
-                        >
-                          <i class="bi bi-pencil"></i>
-                        </a>
-                        <form
-                          action="/api/v1/user/dictionary/<%= vocab._id %>?_method=DELETE"
-                          method="post"
-                          onsubmit="return confirm('Are you sure?');"
-                          class="mb-0"
-                        >
-                          <button
-                            type="submit"
-                            class="btn btn-danger rounded-0 rounded-end"
-                            title="Delete"
-                          >
-                            <i class="bi bi-trash"></i>
-                          </button>
-                        </form>
-                      </div>
-                    </td>
-                  </tr>
-                  <% }) %>
-                </tbody>
-              </table>
-            </div>
+              <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle">
+                  <thead>
+                    <tr>
+                      <th style="width: 50px;">#</th>
+                      <th>Word</th>
+                      <th>Pronunciation</th>
+                      <th>Part of Speech</th>
+                      <th>Meaning</th>
+                      <th>Examples</th>
+                      <th>Updated At</th>
+                      <th style="width: 100px;" class="text-center">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% vocabularies.forEach((vocab, index) => { %>
+                      <tr>
+                        <td><%= index + 1 + (currentPage - 1) * 10 %></td>
+                        <td class="fw-semibold text-dark"><%= vocab.word %></td>
+                        <td><%= vocab.pronunciation || 'N/A' %></td>
+                        <td><span class="badge bg-light text-dark border"><%= vocab.partOfSpeech %></span></td>
+                        <td><%= vocab.meaning %></td>
+                        <td>
+                          <% if (Array.isArray(vocab.examples) && vocab.examples.length > 0) { %>
+                            <ul class="mb-0 ps-3 small text-muted">
+                              <% vocab.examples.forEach(ex => { %>
+                                <li><%= ex %></li>
+                              <% }) %>
+                            </ul>
+                          <% } else { %>
+                            <span class="text-muted small"><%= vocab.examples || 'N/A' %></span>
+                          <% } %>
+                        </td>
+                        <td class="small"><%= new Date(vocab.updatedAt).toLocaleDateString('vi-VN') %></td>
+                        <td class="text-center">
+                          <div class="btn-group btn-group-sm" role="group">
+                            <a
+                              href="/api/v1/user/dictionary/<%= vocab._id %>"
+                              class="btn btn-outline-primary me-1"
+                              title="Edit"
+                            >
+                              <i class="bi bi-pencil-square"></i>
+                            </a>
+                            <button
+                              type="button"
+                              class="btn btn-outline-danger delete-btn"
+                              data-id="<%= vocab._id %>"
+                              title="Delete"
+                            >
+                              <i class="bi bi-trash"></i>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    <% }) %>
+                  </tbody>
+                </table>
+              </div>
 
-            <!-- Pagination -->
-            <% if (totalPages > 1) { %>
-            <nav aria-label="Vocabulary pagination" class="mt-4">
-              <ul class="pagination justify-content-center">
-                <% if (currentPage > 1) { %>
-                <li class="page-item">
-                  <a
-                    class="page-link"
-                    href="?page=<%= currentPage - 1 %>&search=<%= search %>"
-                    >Previous</a
-                  >
-                </li>
-                <% } else { %>
-                <li class="page-item disabled">
-                  <span class="page-link">Previous</span>
-                </li>
-                <% } %> <% for (let i = 1; i <= totalPages; i++) { %>
-                <li
-                  class="page-item <%= currentPage === i ? 'active' : '' %>"
-                >
-                  <a
-                    class="page-link"
-                    href="?page=<%= i %>&search=<%= search %>"
-                    ><%= i %></a
-                  >
-                </li>
-                <% } %> <% if (currentPage < totalPages) { %>
-                <li class="page-item">
-                  <a
-                    class="page-link"
-                    href="?page=<%= currentPage + 1 %>&search=<%= search %>"
-                    >Next</a
-                  >
-                </li>
-                <% } else { %>
-                <li class="page-item disabled">
-                  <span class="page-link">Next</span>
-                </li>
-                <% } %>
-              </ul>
-            </nav>
-            <% } %> <% } %>
+              <!-- Smart Pagination (Sliding Window & Ellipsis) -->
+              <% if (typeof totalPages !== 'undefined' && totalPages > 1) { %>
+                <nav aria-label="Vocabulary pagination" class="mt-4">
+                  <ul class="pagination justify-content-center mb-0 flex-wrap">
+                    <!-- Previous Button -->
+                    <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+                      <a class="page-link" href="?page=<%= currentPage - 1 %><%= typeof search !== 'undefined' && search ? '&search=' + search : '' %>">&laquo;</a>
+                    </li>
+
+                    <!-- Pagination Range Loop -->
+                    <% if (typeof paginationRange !== 'undefined') { %>
+                      <% paginationRange.forEach(i => { %>
+                        <% if (i === '...') { %>
+                          <li class="page-item disabled"><span class="page-link">...</span></li>
+                        <% } else { %>
+                          <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                            <a class="page-link" href="?page=<%= i %><%= typeof search !== 'undefined' && search ? '&search=' + search : '' %>"><%= i %></a>
+                          </li>
+                        <% } %>
+                      <% }) %>
+                    <% } %>
+
+                    <!-- Next Button -->
+                    <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+                      <a class="page-link" href="?page=<%= currentPage + 1 %><%= typeof search !== 'undefined' && search ? '&search=' + search : '' %>">&raquo;</a>
+                    </li>
+                  </ul>
+                </nav>
+              <% } %>
+            <% } %>
           </div>
         </div>
       </div>
     </main>
 
-    <!-- JS -->
+    <!-- MODAL: ADD NEW WORD -->
+    <div class="modal fade" id="addWordModal" tabindex="-1" aria-labelledby="addWordModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+          <div class="modal-header bg-light">
+            <h5 class="modal-title fw-bold" id="addWordModalLabel">Add New Word</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <form action="/api/v1/user/dictionary" method="POST">
+            <div class="modal-body p-4">
+              <div class="row g-3">
+                <div class="col-md-4">
+                  <label class="form-label fw-semibold">Word <span class="text-danger">*</span></label>
+                  <input type="text" name="word" class="form-control" placeholder="e.g. apple" required />
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label fw-semibold">Pronunciation</label>
+                  <input type="text" name="pronunciation" class="form-control" placeholder="e.g. /ˈæp.əl/" />
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label fw-semibold">Part of Speech <span class="text-danger">*</span></label>
+                  <select name="partOfSpeech" class="form-select" required>
+                    <option value="">Select Part of Speech</option>
+                    <option>noun</option>
+                    <option>verb</option>
+                    <option>adjective</option>
+                    <option>adverb</option>
+                    <option>preposition</option>
+                    <option>conjunction</option>
+                    <option>interjection</option>
+                    <option>pronoun</option>
+                    <option>determiner</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">Meaning <span class="text-danger">*</span></label>
+                  <input type="text" name="meaning" class="form-control" placeholder="Meaning in Vietnamese" required />
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">Examples</label>
+                  <input type="text" name="examples" class="form-control" placeholder="Examples (comma separated)" />
+                </div>
+              </div>
+            </div>
+            
+            <div class="modal-footer bg-light">
+              <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Cancel</button>
+              <button type="submit" class="btn btn-success fw-semibold px-4">Add Word</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: IMPORT EXCEL -->
+    <div class="modal fade" id="importExcelModal" tabindex="-1" aria-labelledby="importExcelModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+          <div class="modal-header bg-light">
+            <h5 class="modal-title fw-bold" id="importExcelModalLabel">Import Vocabulary from Excel</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <form action="/api/v1/user/dictionary/import-excel" method="POST" enctype="multipart/form-data">
+            <div class="modal-body p-4">
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Upload Excel File (.xlsx, .xls) <span class="text-danger">*</span></label>
+                <input type="file" name="file" class="form-control" accept=".xlsx,.xls" required />
+              </div>
+            </div>
+            
+            <div class="modal-footer bg-light">
+              <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Cancel</button>
+              <button type="submit" class="btn btn-success fw-semibold px-4">Upload File</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: CONFIRM DELETION -->
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+          <div class="modal-header bg-danger text-white">
+            <h5 class="modal-title fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i> Confirm Deletion</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body p-4 text-center">
+            <p class="fs-5 mb-1">Are you sure you want to delete this word?</p>
+            <p class="text-muted small">This action cannot be undone.</p>
+          </div>
+          <div class="modal-footer bg-light justify-content-center">
+            <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Cancel</button>
+            <form id="deleteForm" method="POST" class="d-inline">
+              <button type="submit" class="btn btn-danger fw-semibold">Yes, Delete</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- JS Scripts -->
     <script src="/js/bootstrap.bundle.min.js"></script>
     <script src="/js/users.js"></script>
   </body>

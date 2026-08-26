@@ -3,15 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Portfolio Management - Admin Dashboard</title>
-    <!-- Reset CSS -->
+    <title>Portfolio Management</title>
     <link rel="stylesheet" href="/css/reset.css" />
-    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css" />
-    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="/font/bootstrap-icons.min.css" />
-    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/aos.css" />
     <link rel="stylesheet" href="/css/admin-dashboard.css" />
+    <link rel="stylesheet" href="/css/admin-portfolio.css" />
   </head>
 
   <body>
@@ -21,10 +19,9 @@
         <a class="navbar-brand" href="#">Admin Panel</a>
         <button class="btn btn-outline-light d-lg-none" type="button" id="sidebarToggle">☰</button>
         <div class="ms-auto d-flex align-items-center gap-3 position-relative">
-          <div class="text-white fw-semibold d-none d-sm-block">Welcome, <%= currentUser?.username || 'Admin' %></div>
+          <div class="text-white fw-semibold d-none d-sm-block">Welcome, <%= currentUser.username %></div>
           <button id="accountToggle" class="btn btn-outline-light btn-sm account-toggle" style="min-width: 90px">Account</button>
           <div class="account-menu position-absolute" id="accountMenu" style="display: none">
-            <a class="dropdown-item" href="/api/v1/admin/portfolio"><i class="bi bi-file-earmark-person me-2"></i> Portfolio Data</a>
             <a class="dropdown-item" href="/api/v1/admin/users/profile">Update Info</a>
             <form action="/api/v1/auth/signout" method="POST" class="mb-0">
               <button type="submit" class="dropdown-item">Sign Out</button>
@@ -39,64 +36,71 @@
       <ul class="nav flex-column px-3 pt-4">
         <li class="nav-item"><a class="nav-link" href="/api/v1/admin/dashboard">Dashboard</a></li>
         <li class="nav-item"><a class="nav-link" href="/api/v1/admin/users">User Management</a></li>
-        <li class="nav-item"><a class="nav-link" href="/api/v1/admin/projects">Projects</a></li>
+        <li class="nav-item"><a class="nav-link active" href="/api/v1/admin/projects">Projects</a></li>
         <li class="nav-item"><a class="nav-link" href="/api/v1/admin/dictionary">Dictionary</a></li>
-        <li class="nav-item"><a class="nav-link active fw-bold text-white" href="/api/v1/admin/portfolio">Portfolio Data</a></li>
+        <li class="nav-item"><a class="nav-link" href="/api/v1/admin/portfolio">Portfolio Data</a></li>
         <li class="nav-item"><a class="nav-link" href="/api/v1/admin/contact">Contact Messages</a></li>
-        <li class="nav-item"><a class="nav-link" href="/api/v1/admin/statistics">Statistics</a></li>
       </ul>
     </nav>
 
+    <!-- Main Content -->
     <main class="main-content-fixed">
       <div class="container-fluid pt-5">
         
         <!-- Header Actions -->
-        <div class="d-flex justify-content-between align-items-center mb-4 pt-4">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pt-4 gap-3">
           <div>
-            <a href="/api/v1/admin/dashboard" class="btn btn-outline-secondary btn-sm mb-2"><i class="bi bi-arrow-left"></i> Back to Dashboard</a>
-            <h2 class="fw-bold text-secondary mb-0" id="pageTitle">
+            <h2 class="mb-1" id="pageTitle">
               <%= (!portfolio || !portfolio.about) ? 'Create Portfolio Information' : 'Portfolio Overview' %>
             </h2>
           </div>
-          <div class="d-flex gap-2">
-            <a href="/" target="_blank" class="btn btn-outline-dark">View Live Site</a>
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <a href="/" target="_blank" class="btn btn-outline-dark">
+              <i class="bi bi-globe me-1"></i> View Live Site
+            </a>
             <% if (portfolio && portfolio.about) { %>
-              <button type="button" class="btn btn-primary" id="toggleFormBtn">✏️ Edit Portfolio</button>
+              <button type="button" class="btn btn-primary fw-semibold" id="toggleFormBtn">
+                <i class="bi bi-pencil-square me-1"></i> Edit Portfolio
+              </button>
             <% } %>
           </div>
         </div>
 
-        <!-- FORM (Ẩn/Hiện) -->
-        <div class="card mb-4 custom-card border-0 shadow-sm" id="portfolioFormCard" style="<%= (!portfolio || !portfolio.about) ? '' : 'display: none;' %>">
-          <div class="card-header bg-dark text-white fw-bold">
-            <%= (!portfolio || !portfolio.about) ? '➕ Add Portfolio Data' : '⚙️ Modify Portfolio Data' %>
+        <!-- FORM CARD (Hidden / Visible) -->
+        <div class="card mb-4 border-0 shadow-sm" id="portfolioFormCard" style="<%= (!portfolio || !portfolio.about) ? '' : 'display: none;' %>">
+          <div class="card-header fw-bold">
+            <%= (!portfolio || !portfolio.about) ? 'Add Portfolio Data' : 'Modify Portfolio Data' %>
           </div>
           <div class="card-body p-4">
             <form action="/api/v1/admin/portfolio/update" method="POST" class="row g-3">
               
               <!-- About Information -->
-              <div class="col-12"><h5 class="text-primary border-bottom pb-2">👤 About Information</h5></div>
+              <div class="col-12">
+                <h5 class="text-primary border-bottom pb-2 mb-0">About Information</h5>
+              </div>
               <div class="col-md-6">
-                <label class="form-label fw-semibold">Full Name</label>
+                <label class="form-label fw-semibold">Full Name <span class="text-danger">*</span></label>
                 <input type="text" name="name" class="form-control" value="<%= portfolio?.about?.name || '' %>" placeholder="e.g. Hoa Do" required />
               </div>
               <div class="col-md-6">
-                <label class="form-label fw-semibold">Title</label>
-                <input type="text" name="title" class="form-control" value="<%= portfolio?.about?.title || '' %>" placeholder="e.g. Web developer" required />
+                <label class="form-label fw-semibold">Title <span class="text-danger">*</span></label>
+                <input type="text" name="title" class="form-control" value="<%= portfolio?.about?.title || '' %>" placeholder="e.g. Web Developer" required />
               </div>
               <div class="col-md-6">
                 <label class="form-label fw-semibold">Education</label>
                 <input type="text" name="education" class="form-control" value="<%= portfolio?.about?.education || '' %>" placeholder="e.g. IUH" />
               </div>
               <div class="col-12">
-                <label class="form-label fw-semibold">Description</label>
+                <label class="form-label fw-semibold">Description <span class="text-danger">*</span></label>
                 <textarea name="description" class="form-control" rows="3" required><%= portfolio?.about?.description || '' %></textarea>
               </div>
 
               <!-- Contact Information -->
-              <div class="col-12 mt-4"><h5 class="text-primary border-bottom pb-2">📞 Contact & Social Links</h5></div>
+              <div class="col-12 mt-4">
+                <h5 class="text-primary border-bottom pb-2 mb-0">Contact & Social Links</h5>
+              </div>
               <div class="col-md-6">
-                <label class="form-label fw-semibold">Email</label>
+                <label class="form-label fw-semibold">Email <span class="text-danger">*</span></label>
                 <input type="email" name="email" class="form-control" value="<%= portfolio?.contact?.email || '' %>" required />
               </div>
               <div class="col-md-6">
@@ -106,8 +110,10 @@
 
               <!-- Social Links Dynamic Section -->
               <div class="col-12 mt-3 d-flex justify-content-between align-items-center">
-                <label class="form-label fw-semibold mb-0 text-secondary">🌐 Social Links (GitHub, LinkedIn...)</label>
-                <button type="button" class="btn btn-outline-primary btn-sm" id="addSocialBtn">➕ Add Social Link</button>
+                <label class="form-label fw-semibold mb-0 text-secondary">Social Links (GitHub, LinkedIn...)</label>
+                <button type="button" class="btn btn-outline-primary btn-sm fw-semibold" id="addSocialBtn">
+                  <i class="bi bi-plus-lg me-1"></i> Add Social Link
+                </button>
               </div>
               <div class="col-12">
                 <div class="row g-3" id="socialsContainer">
@@ -136,36 +142,49 @@
 
               <!-- Skills Section Dynamic -->
               <div class="col-12 mt-4 d-flex justify-content-between align-items-center">
-                <h5 class="text-primary m-0">🛠️ Skills Categories</h5>
-                <button type="button" class="btn btn-outline-primary btn-sm" id="addSkillCategoryBtn">➕ Add Category</button>
+                <h5 class="text-primary mb-0">Skills Categories</h5>
+                <button type="button" class="btn btn-outline-primary btn-sm fw-semibold" id="addSkillCategoryBtn">
+                  <i class="bi bi-plus-lg me-1"></i> Add Category
+                </button>
               </div>
-              <div class="col-12"><div class="row g-3" id="skillsContainer">
-                <% 
-                  let skillGroups = portfolio?.skills && portfolio.skills.length > 0 
-                    ? portfolio.skills 
-                    : [{ category: 'Frontend', items: [] }];
-                %>
-                <% skillGroups.forEach((skillGroup, index) => { %>
-                  <div class="col-md-6 skill-item">
-                    <div class="card bg-light border p-3 h-100 position-relative">
-                      <% if (index >= 1) { %><button type="button" class="btn-close position-absolute top-0 end-0 m-2 remove-skill-btn"></button><% } %>
-                      <div class="mb-2"><label class="form-label">Category</label>
-                      <input type="text" name="skillCategories[<%= index %>]" class="form-control" value="<%= skillGroup.category %>" required /></div>
-                      <div><label class="form-label">Items (comma separated)</label>
-                      <input type="text" name="skillItems[<%= index %>]" class="form-control" value="<%= skillGroup.items.join(', ') %>" required /></div>
+              <div class="col-12">
+                <div class="row g-3" id="skillsContainer">
+                  <% 
+                    let skillGroups = portfolio?.skills && portfolio.skills.length > 0 
+                      ? portfolio.skills 
+                      : [{ category: 'Frontend', items: [] }];
+                  %>
+                  <% skillGroups.forEach((skillGroup, index) => { %>
+                    <div class="col-md-6 skill-item">
+                      <div class="card bg-light border p-3 h-100 position-relative">
+                        <% if (index >= 1) { %>
+                          <button type="button" class="btn-close position-absolute top-0 end-0 m-2 remove-skill-btn"></button>
+                        <% } %>
+                        <div class="mb-2">
+                          <label class="form-label">Category</label>
+                          <input type="text" name="skillCategories[<%= index %>]" class="form-control" value="<%= skillGroup.category %>" required />
+                        </div>
+                        <div>
+                          <label class="form-label">Items (comma separated)</label>
+                          <input type="text" name="skillItems[<%= index %>]" class="form-control" value="<%= skillGroup.items.join(', ') %>" required />
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                <% }) %>
-              </div></div>
+                  <% }) %>
+                </div>
+              </div>
 
               <!-- Interests -->
-              <div class="col-12 mt-4"><h5 class="text-primary border-bottom pb-2">🎯 Interests</h5></div>
+              <div class="col-12 mt-4">
+                <h5 class="text-primary border-bottom pb-2 mb-0">Interests</h5>
+              </div>
               <div class="col-12">
                 <input type="text" name="interests" class="form-control" value="<%= portfolio?.interests ? portfolio.interests.join(', ') : '' %>" placeholder="Coding, Reading, Gaming" />
               </div>
 
+              <!-- Submit / Cancel -->
               <div class="col-12 text-end mt-4">
-                <button type="submit" class="btn btn-success px-4 fw-semibold">💾 Save Portfolio</button>
+                <button type="submit" class="btn btn-success px-4 fw-semibold">Save Portfolio</button>
                 <% if (portfolio && portfolio.about) { %>
                   <button type="button" class="btn btn-secondary px-3 ms-2" id="cancelFormBtn">Cancel</button>
                 <% } %>
@@ -176,145 +195,94 @@
 
         <!-- VIEW CARDS -->
         <% if (portfolio && portfolio.about) { %>
-        <div class="row g-4 pb-5" id="portfolioViewCards">
-          
-          <!-- About -->
-          <div class="col-lg-6">
-            <div class="card shadow-sm border-0 h-100">
-              <div class="card-body">
-                <h4 class="card-title text-primary mb-3">👤 About Information</h4>
-                <ul class="list-group list-group-flush">
-                  <li class="list-group-item px-0"><strong>Name:</strong> <span class="text-muted"><%= portfolio.about.name || 'N/A' %></span></li>
-                  <li class="list-group-item px-0"><strong>Title:</strong> <span class="text-muted"><%= portfolio.about.title %></span></li>
-                  <li class="list-group-item px-0"><strong>Description:</strong> <p class="text-muted mb-0 mt-1"><%= portfolio.about.description %></p></li>
-                  <li class="list-group-item px-0"><strong>Education:</strong> <span class="text-muted"><%= portfolio.about.education || 'N/A' %></span></li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          <!-- Contact & Socials -->
-          <div class="col-lg-6">
-            <div class="card shadow-sm border-0 h-100">
-              <div class="card-body">
-                <h4 class="card-title text-primary mb-3">📞 Contact & Socials</h4>
-                <ul class="list-group list-group-flush mb-3">
-                  <li class="list-group-item px-0"><strong>Email:</strong> <span class="text-muted"><%= portfolio.contact.email %></span></li>
-                  <li class="list-group-item px-0"><strong>Phone:</strong> <span class="text-muted"><%= portfolio.contact.phone || 'N/A' %></span></li>
-                </ul>
-                <h6 class="fw-semibold text-dark mt-3">Social Links:</h6>
-                <div class="d-flex flex-wrap gap-2">
-                  <% if (portfolio.contact?.socialLinks && portfolio.contact.socialLinks.length > 0) { %>
-                    <% portfolio.contact.socialLinks.forEach(link => { %>
-                      <a href="<%= link.url %>" target="_blank" class="btn btn-outline-dark btn-sm">
-                        <i class="bi bi-link-45deg"></i> <%= link.name %>
-                      </a>
-                    <% }); %>
-                  <% } else { %>
-                    <span class="text-muted small">No social links added yet.</span>
-                  <% } %>
+          <div class="row g-4 pb-5" id="portfolioViewCards">
+            
+            <!-- About -->
+            <div class="col-lg-6">
+              <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                  <h4 class="card-title text-primary mb-3">About Information</h4>
+                  <ul class="list-group list-group-flush">
+                    <li class="list-group-item px-0"><strong>Name:</strong> <span class="text-muted"><%= portfolio.about.name || 'N/A' %></span></li>
+                    <li class="list-group-item px-0"><strong>Title:</strong> <span class="text-muted"><%= portfolio.about.title %></span></li>
+                    <li class="list-group-item px-0"><strong>Description:</strong> <p class="text-muted mb-0 mt-1"><%= portfolio.about.description %></p></li>
+                    <li class="list-group-item px-0"><strong>Education:</strong> <span class="text-muted"><%= portfolio.about.education || 'N/A' %></span></li>
+                  </ul>
                 </div>
               </div>
             </div>
-          </div>
 
-          <!-- Skills -->
-          <div class="col-lg-6">
-            <div class="card shadow-sm border-0 h-100">
-              <div class="card-body">
-                <h4 class="card-title text-primary mb-3">🛠️ Skills</h4>
-                <% if (portfolio.skills) { %>
-                  <% portfolio.skills.forEach(skillGroup => { %>
-                    <div class="mb-3">
-                      <h6 class="fw-bold text-dark"><%= skillGroup.category %></h6>
-                      <div class="d-flex flex-wrap gap-1">
-                        <% skillGroup.items.forEach(item => { %>
-                          <span class="badge bg-secondary"><%= item %></span>
-                        <% }); %>
+            <!-- Contact & Socials -->
+            <div class="col-lg-6">
+              <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                  <h4 class="card-title text-primary mb-3">Contact & Socials</h4>
+                  <ul class="list-group list-group-flush mb-3">
+                    <li class="list-group-item px-0"><strong>Email:</strong> <span class="text-muted"><%= portfolio.contact.email %></span></li>
+                    <li class="list-group-item px-0"><strong>Phone:</strong> <span class="text-muted"><%= portfolio.contact.phone || 'N/A' %></span></li>
+                  </ul>
+                  <h6 class="fw-semibold text-dark mt-3">Social Links:</h6>
+                  <div class="d-flex flex-wrap gap-2">
+                    <% if (portfolio.contact?.socialLinks && portfolio.contact.socialLinks.length > 0) { %>
+                      <% portfolio.contact.socialLinks.forEach(link => { %>
+                        <a href="<%= link.url %>" target="_blank" class="btn btn-outline-dark btn-sm">
+                          <i class="bi bi-link-45deg"></i> <%= link.name %>
+                        </a>
+                      <% }); %>
+                    <% } else { %>
+                      <span class="text-muted small">No social links added yet.</span>
+                    <% } %>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Skills -->
+            <div class="col-lg-6">
+              <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                  <h4 class="card-title text-primary mb-3">Skills</h4>
+                  <% if (portfolio.skills) { %>
+                    <% portfolio.skills.forEach(skillGroup => { %>
+                      <div class="mb-3">
+                        <h6 class="fw-bold text-dark"><%= skillGroup.category %></h6>
+                        <div class="d-flex flex-wrap gap-1">
+                          <% skillGroup.items.forEach(item => { %>
+                            <span class="badge bg-secondary"><%= item %></span>
+                          <% }); %>
+                        </div>
                       </div>
-                    </div>
-                  <% }); %>
-                <% } %>
-              </div>
-            </div>
-          </div>
-
-          <!-- Interests -->
-          <div class="col-lg-6">
-            <div class="card shadow-sm border-0 h-100">
-              <div class="card-body">
-                <h4 class="card-title text-primary mb-3">🎯 Interests</h4>
-                <div class="d-flex flex-wrap gap-2">
-                  <% if (portfolio.interests) { %>
-                    <% portfolio.interests.forEach(interest => { %>
-                      <span class="badge bg-primary px-3 py-2 fs-6"><%= interest %></span>
                     <% }); %>
                   <% } %>
                 </div>
               </div>
             </div>
-          </div>
 
-        </div>
+            <!-- Interests -->
+            <div class="col-lg-6">
+              <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                  <h4 class="card-title text-primary mb-3">Interests</h4>
+                  <div class="d-flex flex-wrap gap-2">
+                    <% if (portfolio.interests) { %>
+                      <% portfolio.interests.forEach(interest => { %>
+                        <span class="badge bg-primary px-3 py-2 fs-6"><%= interest %></span>
+                      <% }); %>
+                    <% } %>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
         <% } %>
+
       </div>
     </main>
 
+    <!-- JS Scripts -->
     <script src="/js/bootstrap.bundle.min.js"></script>
-    <script>
-      // Toggle Form Logic
-      document.getElementById('toggleFormBtn')?.addEventListener('click', () => {
-        document.getElementById('portfolioFormCard').style.display = 'block';
-        document.getElementById('portfolioViewCards').style.display = 'none';
-        document.getElementById('toggleFormBtn').style.display = 'none';
-      });
-      document.getElementById('cancelFormBtn')?.addEventListener('click', () => {
-        document.getElementById('portfolioFormCard').style.display = 'none';
-        document.getElementById('portfolioViewCards').style.display = 'flex';
-        document.getElementById('toggleFormBtn').style.display = 'inline-block';
-      });
-
-      // Add Skill Category Logic
-      document.getElementById('addSkillCategoryBtn').addEventListener('click', () => {
-        const container = document.getElementById('skillsContainer');
-        const index = container.querySelectorAll('.skill-item').length;
-        const html = `
-          <div class="col-md-6 skill-item">
-            <div class="card bg-light border p-3 h-100 position-relative">
-              <button type="button" class="btn-close position-absolute top-0 end-0 m-2 remove-skill-btn"></button>
-              <div class="mb-2"><label class="form-label">Category</label>
-              <input type="text" name="skillCategories[${index}]" class="form-control" required /></div>
-              <div><label class="form-label">Items</label>
-              <input type="text" name="skillItems[${index}]" class="form-control" required /></div>
-            </div>
-          </div>`;
-        container.insertAdjacentHTML('beforeend', html);
-      });
-
-      document.getElementById('skillsContainer').addEventListener('click', (e) => {
-        if (e.target.classList.contains('remove-skill-btn')) e.target.closest('.skill-item').remove();
-      });
-
-      // Add Social Link Logic
-      document.getElementById('addSocialBtn')?.addEventListener('click', () => {
-        const container = document.getElementById('socialsContainer');
-        const index = container.querySelectorAll('.social-item').length;
-        const html = `
-          <div class="col-md-6 social-item">
-            <div class="card bg-light border p-3 h-100 position-relative">
-              <button type="button" class="btn-close position-absolute top-0 end-0 m-2 remove-social-btn"></button>
-              <div class="mb-2"><label class="form-label">Platform Name</label>
-              <input type="text" name="socialNames[${index}]" class="form-control" placeholder="e.g. GitHub" required /></div>
-              <div><label class="form-label">Profile URL</label>
-              <input type="url" name="socialUrls[${index}]" class="form-control" placeholder="https://..." required /></div>
-            </div>
-          </div>`;
-        container.insertAdjacentHTML('beforeend', html);
-      });
-
-      document.getElementById('socialsContainer')?.addEventListener('click', (e) => {
-        if (e.target.classList.contains('remove-social-btn')) e.target.closest('.social-item').remove();
-      });
-    </script>
+    <script src="/js/admin-dashboard.js"></script>
+    <script src="/js/admin-portfolio.js"></script>
   </body>
 </html>

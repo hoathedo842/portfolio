@@ -2,317 +2,87 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title><%= portfolioData?.about?.name ? `${portfolioData.about.name} | Web Developer` : "Portfolio" %></title>
   
-  <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
-  <!-- CSS Libraries -->
-  <link rel="stylesheet" href="/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="/css/reset.css" />
   <link rel="stylesheet" href="/font/bootstrap-icons.min.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css"/>
-  
-  <!-- Modern UI CSS with Green Navbar -->
-  <style>
-    :root {
-      --bg-main: #ffffff;
-      --bg-secondary: #f4fbf7;
-      --text-main: #081c15;
-      --text-muted: #40916c;
-      --primary-green: #52b788;
-      --dark-green: #1b4332;
-      --navbar-bg: #74c69d;
-      --navbar-text: #ffffff;
-      --navbar-hover: #081c15;
-      --accent-gradient: linear-gradient(135deg, #52b788, #74c69d);
-      --card-bg: #ffffff;
-      --border-color: #d8f3dc;
-    }
-
-    html {
-      scroll-behavior: smooth;
-      scroll-padding-top: 76px;
-    }
-
-    body {
-      font-family: 'Inter', sans-serif;
-      color: var(--text-main);
-      background-color: var(--bg-main);
-      padding-top: 76px;
-    }
-
-    /* Navbar */
-    .navbar-custom {
-      background-color: var(--navbar-bg) !important;
-      border-bottom: 1px solid var(--border-color) !important;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    }
-    .navbar-brand {
-      color: var(--navbar-text) !important;
-      font-weight: 800;
-      letter-spacing: -0.5px;
-    }
-    .nav-link {
-      color: var(--navbar-text) !important;
-      font-weight: 500;
-      transition: color 0.3s ease;
-    }
-    .nav-link:hover {
-      color: var(--navbar-hover) !important;
-    }
-
-    /* Hero / About Section */
-    .hero-section {
-      background-color: var(--bg-secondary);
-      padding: 100px 0;
-      border-bottom: 1px solid var(--border-color);
-    }
-    .hero-title {
-      font-size: 3.5rem;
-      font-weight: 800;
-      letter-spacing: -1px;
-      background: var(--accent-gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 20px;
-    }
-    .hero-subtitle {
-      font-size: 1.1rem;
-      color: var(--text-muted);
-      line-height: 1.8;
-      max-width: 600px;
-      margin: 0 auto;
-    }
-    .hero-links a {
-      display: inline-flex;
-      align-items: center;
-      padding: 10px 20px;
-      border-radius: 50px;
-      background: var(--card-bg);
-      color: var(--dark-green);
-      font-weight: 600;
-      text-decoration: none;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-      transition: all 0.3s ease;
-      border: 1px solid var(--border-color);
-    }
-    .hero-links a:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 15px rgba(82, 183, 136, 0.2);
-      border-color: var(--primary-green);
-    }
-
-    /* Projects Section */
-    .section-title {
-      font-weight: 800;
-      color: var(--dark-green);
-      position: relative;
-      display: inline-block;
-      margin-bottom: 40px;
-      text-transform: capitalize; 
-      letter-spacing: -0.5px;
-    }
-    .section-title::after {
-      content: "";
-      position: absolute;
-      width: 50%;
-      height: 4px;
-      background: var(--primary-green);
-      bottom: -10px;
-      left: 25%;
-      border-radius: 2px;
-    }
-    .project-card {
-      border: 1px solid var(--border-color);
-      border-radius: 16px;
-      overflow: hidden;
-      background: var(--card-bg);
-      transition: all 0.4s ease;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-    }
-    .project-card:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 15px 30px rgba(82, 183, 136, 0.15);
-      border-color: var(--primary-green);
-    }
-    .project-card img {
-      height: 220px;
-      object-fit: cover;
-      border-bottom: 1px solid var(--border-color);
-    }
-    .tech-stack {
-      font-size: 0.85rem;
-      color: var(--primary-green);
-      font-weight: 600;
-    }
-
-    /* Skills Section */
-    .skills-section {
-      background-color: var(--bg-secondary);
-    }
-    .skill-badge {
-      display: inline-block;
-      background-color: #d8f3dc;
-      color: var(--dark-green);
-      padding: 8px 20px;
-      border-radius: 50px;
-      font-size: 0.95rem;
-      font-weight: 600;
-      margin: 5px;
-      border: 1px solid transparent;
-      transition: all 0.3s ease;
-    }
-    .skill-badge:hover {
-      background-color: var(--primary-green);
-      color: white;
-    }
-    .skill-category {
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: var(--dark-green);
-      margin-bottom: 15px;
-      text-transform: capitalize;
-    }
-
-    /* Contact Form & Phone Input Fix */
-    .contact-card {
-      background: var(--card-bg);
-      padding: 40px;
-      border-radius: 16px;
-      border: 1px solid var(--border-color);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.03);
-    }
-    .form-control {
-      border-radius: 10px;
-      padding: 12px 15px;
-      border: 1px solid var(--border-color);
-    }
-    .form-control:focus {
-      border-color: var(--primary-green);
-      box-shadow: 0 0 0 0.25rem rgba(82, 183, 136, 0.25);
-    }
-    .iti {
-      width: 100% !important;
-      display: block !important;
-    }
-    .iti input, .iti input[type=text], .iti input[type=tel] {
-      padding-left: 52px !important;
-    }
-    .btn-submit {
-      background: var(--accent-gradient);
-      border: none;
-      border-radius: 10px;
-      padding: 12px;
-      font-weight: 600;
-      transition: opacity 0.3s ease;
-      color: white;
-    }
-    .btn-submit:hover {
-      opacity: 0.9;
-      color: white;
-    }
-
-    /* Reveal Animation Classes */
-    .reveal {
-      opacity: 0;
-      transform: translateY(40px);
-      transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
-    }
-    .reveal.active {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    
-    @keyframes loadFade {
-      0% { opacity: 0; transform: translateY(20px); }
-      100% { opacity: 1; transform: translateY(0); }
-    }
-    .hero-animate {
-      animation: loadFade 1s ease-out forwards;
-    }
-  </style>
+  <link rel="stylesheet" href="/css/home.css">
 </head>
 
 <body>
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg fixed-top navbar-custom">
-    <div class="container">
-      <a class="navbar-brand" href="#"><%= portfolioData?.about?.name || "DevPortfolio" %></a>
-      <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
-        <span class="navbar-toggler-icon"></span>
+  <nav class="site-navbar">
+    <div class="nav-content">
+      <a class="site-brand" href="#"><%= portfolioData?.about?.name || "DevPortfolio" %></a>
+    
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+        <i class="bi bi-list"></i>
       </button>
-      <div class="collapse navbar-collapse" id="navbarContent">
-        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 gap-2 align-items-lg-center">
-          <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
-          <li class="nav-item"><a class="nav-link" href="#skills">Skills</a></li>
-          <li class="nav-item"><a class="nav-link" href="#projects">Projects</a></li>
-          <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
-          <li class="nav-item">
-            <a class="nav-link btn rounded-pill px-4 ms-lg-2 text-center" href="/api/v1/auth/signin" style="border: 1px solid white; color: white !important;">Sign In</a>
-          </li>
-        </ul>
-      </div>
+
+      <ul class="nav-menu" id="navMenu">
+        <li><a class="custom-nav-link" href="#about">About</a></li>
+        <li><a class="custom-nav-link" href="#skills">Skills</a></li>
+        <li><a class="custom-nav-link" href="#projects">Projects</a></li>
+        <li><a class="custom-nav-link" href="#contact">Contact</a></li>
+        <li><a class="signin-btn" href="/api/v1/auth/signin">Sign In</a></li>
+      </ul>
     </div>
   </nav>
 
-  <!-- Hero / About Section -->
-  <section id="about" class="hero-section text-center">
-    <div class="container hero-animate">
-      <div class="row justify-content-center">
-        <div class="col-lg-8">
-          <p class="text-uppercase fw-bold mb-2" style="color: var(--dark-green); letter-spacing: 2px;">Hello, I'm <%= portfolioData?.about?.name || "a Developer" %></p>
-          <h1 class="hero-title"><%= portfolioData?.about?.title || "Building Digital Experiences" %></h1>
-          <p class="hero-subtitle mb-5"><%= portfolioData?.about?.description || "I focus on clean code, modern web development, and effective database management." %></p>
-          
-          <div class="hero-links d-flex flex-wrap justify-content-center gap-3">
-            <% if (portfolioData?.contact?.email) { %>
-              <a href="mailto:<%= portfolioData.contact.email %>">
-                <i class="bi bi-envelope-fill text-success me-2"></i> Email
+  <section id="about" class="hero-section">
+    <div class="wrapper-container hero-animate">
+      <div class="hero-inner">
+        <p class="hero-greeting">Hello, I'm <%= portfolioData?.about?.name || "a Developer" %></p>
+        <h1 class="hero-title"><%= portfolioData?.about?.title || "Building Digital Experiences" %></h1>
+        <p class="hero-subtitle"><%= portfolioData?.about?.description || "I focus on clean code, modern web development, and effective database management." %></p>
+        
+        <div class="hero-links">
+          <% if (portfolioData?.contact?.email) { %>
+            <a href="mailto:<%= portfolioData.contact.email %>">
+              <i class="bi bi-envelope-fill email-icon"></i> Email
+            </a>
+          <% } %>
+          <% if (portfolioData?.contact?.socialLinks) { %>
+            <% portfolioData.contact.socialLinks.forEach(link => { %>
+              <a href="<%= link.url %>" target="_blank">
+                <% if (link.name.toLowerCase().includes('github')) { %><i class="bi bi-github"></i><% } 
+                   else if (link.name.toLowerCase().includes('linkedin')) { %><i class="bi bi-linkedin linkedin-icon"></i><% } 
+                   else { %><i class="bi bi-link-45deg"></i><% } %>
+                <%= link.name %>
               </a>
-            <% } %>
-            <% if (portfolioData?.contact?.socialLinks) { %>
-              <% portfolioData.contact.socialLinks.forEach(link => { %>
-                <a href="<%= link.url %>" target="_blank">
-                  <% if (link.name.toLowerCase().includes('github')) { %><i class="bi bi-github me-2"></i><% } 
-                     else if (link.name.toLowerCase().includes('linkedin')) { %><i class="bi bi-linkedin text-primary me-2"></i><% } 
-                     else { %><i class="bi bi-link-45deg me-2"></i><% } %>
-                  <%= link.name %>
-                </a>
-              <% }) %>
-            <% } %>
-          </div>
-          
-          <div class="mt-5 text-muted small fw-semibold">
-            <i class="bi bi-mortarboard-fill text-warning me-1"></i> <%= portfolioData?.about?.education || "Industrial University of Ho Chi Minh City" %>
-          </div>
+            <% }) %>
+          <% } %>
+        </div>
+        
+        <div class="hero-education">
+          <i class="bi bi-mortarboard-fill"></i> <%= portfolioData?.about?.education || "Industrial University of Ho Chi Minh City" %>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Projects Section -->
-  <section id="projects" class="py-5 bg-white">
-    <div class="container py-4">
-      <div class="text-center reveal">
+  <section id="projects" class="section-pad bg-white-custom">
+    <div class="wrapper-container">
+      <div class="section-title-wrap reveal">
         <h2 class="section-title">Projects</h2>
       </div>
-      <div class="row g-4 mt-2">
+      <div class="projects-grid">
         <% if (locals.projectList) { projectList.forEach(project => { %>
-          <div class="col-12 col-md-6 col-lg-4 reveal">
-            <div class="project-card h-100 d-flex flex-column">
-              <% if (project.imageUrl) { %><img src="<%= project.imageUrl %>" class="img-fluid" alt="<%= project.title %>"><% } %>
-              <div class="p-4 d-flex flex-column flex-grow-1">
-                <h5 class="fw-bold mb-2" style="color: var(--dark-green);"><%= project.title %></h5>
-                <p class="tech-stack mb-3"><%= project.tech %></p>
-                <% if (project.description) { %>
-                  <ul class="small text-secondary ps-3 mb-0 flex-grow-1">
-                    <% project.description.forEach(desc => { %><li><%= desc %></li><% }) %>
-                  </ul>
-                <% } %>
-              </div>
+          <div class="project-card reveal">
+            <% if (project.imageUrl) { %><img src="<%= project.imageUrl %>" alt="<%= project.title %>"><% } %>
+            <div class="project-body">
+              <h5 class="project-title-text"><%= project.title %></h5>
+              <p class="tech-stack"><%= project.tech %></p>
+              <% if (project.description) { %>
+                <ul class="project-desc-list">
+                  <% project.description.forEach(desc => { %><li><%= desc %></li><% }) %>
+                </ul>
+              <% } %>
             </div>
           </div>
         <% }) } %>
@@ -320,124 +90,79 @@
     </div>
   </section>
 
-  <!-- Skills Section -->
-  <section id="skills" class="py-5 skills-section">
-    <div class="container py-4 reveal">
-      <div class="text-center">
+  <section id="skills" class="section-pad bg-secondary-custom">
+    <div class="wrapper-container reveal">
+      <div class="section-title-wrap">
         <h2 class="section-title">Skills</h2>
       </div>
-      <div class="row justify-content-center mt-4">
-        <div class="col-12 col-md-10">
-          <div class="row g-4 text-center">
-            <% if (portfolioData?.skills) { portfolioData.skills.forEach(skill => { %>
-                <div class="col-12 col-md-6">
-                  <h4 class="skill-category"><%= skill.category %></h4>
-                  <div class="d-flex flex-wrap justify-content-center">
-                    <% skill.items.forEach(item => { %>
-                      <span class="skill-badge"><%= item %></span>
-                    <% }) %>
-                  </div>
-                </div>
-            <% }) } %>
-          </div>
-        </div>
+      <div class="skills-grid">
+        <% if (portfolioData?.skills) { portfolioData.skills.forEach(skill => { %>
+            <div>
+              <h4 class="skill-category"><%= skill.category %></h4>
+              <div class="skill-badges-box">
+                <% skill.items.forEach(item => { %>
+                  <span class="skill-badge"><%= item %></span>
+                <% }) %>
+              </div>
+            </div>
+        <% }) } %>
       </div>
     </div>
   </section>
 
-  <!-- Contact Section -->
-  <section id="contact" class="py-5 bg-white">
-    <div class="container py-4 reveal">
-      <div class="text-center">
+  <section id="contact" class="section-pad bg-white-custom">
+    <div class="wrapper-container reveal">
+      <div class="section-title-wrap">
         <h2 class="section-title">Get in touch</h2>
       </div>
-      <div class="row justify-content-center mt-3">
-        <div class="col-lg-6">
-          <div class="contact-card">
-            <form id="contactForm">
-              <div class="mb-3">
-                <label class="form-label fw-semibold">Name</label>
-                <input type="text" name="name" class="form-control bg-light" placeholder="John Doe" required>
-              </div>
-              <div class="mb-3">
-                <label class="form-label fw-semibold">Email</label>
-                <input type="email" name="email" class="form-control bg-light" placeholder="john@example.com" required>
-              </div>
-              <div class="mb-3">
-                <label class="form-label fw-semibold">Phone <span class="text-muted fw-normal small">(Optional)</span></label>
-                <input type="tel" id="phone" name="phone" class="form-control bg-light">
-              </div>
-              <div class="mb-4">
-                <label class="form-label fw-semibold">Message</label>
-                <textarea name="message" class="form-control bg-light" rows="4" placeholder="How can I help you?" required></textarea>
-              </div>
-              <button type="submit" id="submitBtn" class="btn btn-submit w-100">Send Message</button>
-              
-              <!-- Khu vực hiển thị lỗi nếu có -->
-              <div id="formResponse" class="mt-3 text-center fw-semibold"></div>
-            </form>
-          </div>
+      <div class="contact-flex-wrap">
+        <div class="contact-card">
+          <form id="contactForm">
+            <div class="form-group-custom">
+              <label class="form-label-custom">Name</label>
+              <input type="text" name="name" class="form-control-custom" placeholder="John Doe" required>
+            </div>
+            <div class="form-group-custom">
+              <label class="form-label-custom">Email</label>
+              <input type="email" name="email" class="form-control-custom" placeholder="john@example.com" required>
+            </div>
+            <div class="form-group-custom">
+              <label class="form-label-custom">Phone <span class="label-optional">(Optional)</span></label>
+              <input type="tel" id="phone" name="phone" class="form-control-custom">
+            </div>
+            <div class="form-group-textarea">
+              <label class="form-label-custom">Message</label>
+              <textarea name="message" class="form-control-custom" rows="4" placeholder="How can I help you?" required></textarea>
+            </div>
+            <button type="submit" id="submitBtn" class="btn-submit">Send Message</button>
+            
+            <div id="formResponse" class="form-response-text"></div>
+          </form>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Footer -->
-  <footer class="text-center py-4 text-white" style="background-color: var(--dark-green);">
-    <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
-      <p class="mb-0 opacity-75 small">
+  <footer class="site-footer">
+    <div class="wrapper-container">
+      <p class="footer-text">
         &copy; <span id="currentYear"></span> <%= portfolioData?.about?.name || "Portfolio" %>. All rights reserved.
       </p>
-      <a href="#about" class="text-white text-decoration-none small opacity-75 d-flex align-items-center gap-1">
-        Back to top <i class="bi bi-arrow-up-circle"></i>
-      </a>
     </div>
   </footer>
 
-  <!-- Success Modal Popup (Cách A) -->
-  <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
-        <div class="modal-body text-center p-5">
-          <div class="mb-3">
-            <div class="d-inline-flex align-items-center justify-content-center bg-success bg-opacity-10 text-success rounded-circle" style="width: 70px; height: 70px;">
-              <i class="bi bi-check-lg fs-1"></i>
-            </div>
-          </div>
-          <h4 class="fw-bold mb-2" style="color: var(--dark-green);">Message Sent!</h4>
-          <p class="text-secondary mb-4">Thank you for reaching out. I will get back to you as soon as possible.</p>
-          <button type="button" class="btn btn-success w-100 py-2 rounded-pill fw-semibold" data-bs-dismiss="modal" style="background-color: var(--primary-green); border: none;">Got it</button>
-        </div>
+  <div class="custom-modal-backdrop" id="successModal">
+    <div class="custom-modal-box">
+      <div class="modal-icon-wrap">
+        <i class="bi bi-check-lg" style="font-size: 2rem;"></i>
       </div>
+      <h4 class="modal-title-text">Message Sent!</h4>
+      <p class="modal-desc-text">Thank you for reaching out. I will get back to you as soon as possible.</p>
+      <button type="button" class="modal-btn-close" id="closeModal">Got it</button>
     </div>
   </div>
 
-  <!-- Scripts -->
-  <script src="/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
-  <script src="/js/contact.js"></script>
-  
-  <!-- Scripts bổ trợ -->
-  <script>
-    document.getElementById('currentYear').textContent = new Date().getFullYear();
-
-    document.addEventListener("DOMContentLoaded", function() {
-      const reveals = document.querySelectorAll(".reveal");
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("active");
-          }
-        });
-      }, {
-        threshold: 0.1,
-        rootMargin: "0px 0px -50px 0px"
-      });
-
-      reveals.forEach(reveal => {
-        observer.observe(reveal);
-      });
-    });
-  </script>
+  <script src="/js/home.js"></script>
 </body>
 </html>

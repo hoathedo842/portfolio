@@ -4,20 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Admin Dashboard</title>
-
-    <!-- Reset CSS -->
     <link rel="stylesheet" href="/css/reset.css" />
-
-    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css" />
-
-    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="/font/bootstrap-icons.min.css" />
-
-    <!-- AOS Animation CSS -->
     <link rel="stylesheet" href="/css/aos.css" />
-
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="/css/admin-dashboard.css" />
   </head>
 
@@ -26,43 +16,14 @@
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top navbar-custom">
       <div class="container-fluid">
         <a class="navbar-brand" href="#">Admin Panel</a>
-
-        <!-- Toggle Button for mobile sidebar -->
-        <button
-          class="btn btn-outline-light d-lg-none"
-          type="button"
-          id="sidebarToggle"
-        >
-          ☰
-        </button>
-
-        <!-- Welcome + Account Menu -->
+        <button class="btn btn-outline-light d-lg-none" type="button" id="sidebarToggle">☰</button>
         <div class="ms-auto d-flex align-items-center gap-3 position-relative">
           <div class="text-white fw-semibold d-none d-sm-block">
             Welcome, <%= currentUser.username %>
           </div>
-
-          <!-- Account Button -->
-          <button
-            id="accountToggle"
-            class="btn btn-outline-light btn-sm account-toggle"
-            style="min-width: 90px"
-          >
-            Account
-          </button>
-
-          <!-- Custom Menu -->
-          <div
-            class="account-menu position-absolute"
-            id="accountMenu"
-            style="display: none"
-          >
-            <a class="dropdown-item" href="/api/v1/admin/portfolio">
-              <i class="bi bi-file-earmark-person me-2"></i> Portfolio Data
-            </a>
-            <a class="dropdown-item" href="/api/v1/admin/users/profile">
-              Update Info
-            </a>
+          <button id="accountToggle" class="btn btn-outline-light btn-sm account-toggle" style="min-width: 90px">Account</button>
+          <div class="account-menu position-absolute" id="accountMenu" style="display: none">
+            <a class="dropdown-item" href="/api/v1/admin/users/profile">Update Info</a>
             <form action="/api/v1/auth/signout" method="POST" class="mb-0">
               <button type="submit" class="dropdown-item">Sign Out</button>
             </form>
@@ -72,32 +33,14 @@
     </nav>
 
     <!-- Sidebar -->
-    <nav
-      id="sidebarMenu"
-      class="sidebar-custom sidebar-fixed sidebar-slide d-lg-block"
-    >
+    <nav id="sidebarMenu" class="sidebar-custom sidebar-fixed sidebar-slide d-lg-block">
       <ul class="nav flex-column px-3 pt-4">
-        <li class="nav-item">
-          <a class="nav-link active" href="/api/v1/admin/dashboard">Dashboard</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/api/v1/admin/users">User Management</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/api/v1/admin/projects">Projects</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/api/v1/admin/dictionary">Dictionary</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/api/v1/admin/portfolio">Portfolio Data</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/api/v1/admin/contact">Contact Messages</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/api/v1/admin/statistics">Statistics</a>
-        </li>
+        <li class="nav-item"><a class="nav-link" href="/api/v1/admin/dashboard">Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link" href="/api/v1/admin/users">User Management</a></li>
+        <li class="nav-item"><a class="nav-link active" href="/api/v1/admin/projects">Projects</a></li>
+        <li class="nav-item"><a class="nav-link" href="/api/v1/admin/dictionary">Dictionary</a></li>
+        <li class="nav-item"><a class="nav-link" href="/api/v1/admin/portfolio">Portfolio Data</a></li>
+        <li class="nav-item"><a class="nav-link" href="/api/v1/admin/contact">Contact Messages</a></li>
       </ul>
     </nav>
 
