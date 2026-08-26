@@ -1,69 +1,16 @@
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  scroll-behavior: smooth;
-  background-color: #f8fff4;
-  color: #1b4332;
-}
-/* Navbar Custom */
-.custom-navbar {
-  background-color: #198754 !important;
+/* Limit the height of the description list inside the project table */
+.project-desc-list {
+  max-height: 80px;
+  overflow-y: auto;
 }
 
-.custom-navbar .navbar-brand,
-.custom-navbar .text-white {
-  color: #fff !important;
+/* Subtle zoom effect for project thumbnail images */
+.table .img-thumbnail {
+  border-radius: 6px;
+  border-color: var(--projects-border);
+  transition: transform 0.2s ease-in-out;
 }
 
-.custom-navbar .btn-outline-light {
-  border-color: #fff;
-  color: #fff;
-}
-
-.custom-navbar .btn-outline-light:hover {
-  background-color: #fff;
-  color: #198754;
-}
-
-/* Sidebar Custom */
-.custom-sidebar {
-  background-color: #1c6643;
-  min-height: 100vh;
-}
-
-.custom-sidebar .nav-link {
-  color: #d4edda;
-}
-
-.custom-sidebar .nav-link:hover {
-  background-color: #198754;
-  color: #fff;
-}
-
-/* Cards Custom */
-.custom-card .card-title {
-  color: #146c43;
-}
-
-.custom-card .fs-4.fw-bold.text-primary {
-  color: #198754 !important;
-}
-
-.custom-card .fs-4.fw-bold.text-success {
-  color: #28a745 !important;
-}
-
-.custom-card .fs-4.fw-bold.text-warning {
-  color: #ffc107 !important;
-}
-
-/* Chart Card Header */
-.custom-card .card-header {
-  background-color: #198754;
-  color: #fff;
-}
-
-/* Table Header */
-.custom-table thead {
-  background-color: #198754;
-  color: #fff;
+.table .img-thumbnail:hover {
+  transform: scale(1.08);
 }

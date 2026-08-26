@@ -31,7 +31,7 @@
 .navbar-custom .dropdown-item:hover {
   background-color: var(--sidebar-hover);
 }
-/* Avatar */
+
 .account-menu {
   right: 0;
   top: 100%;
@@ -116,7 +116,9 @@
   border: none;
   border-radius: 1rem;
   box-shadow: 0 4px 12px var(--card-shadow);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .stats-cards .card:hover {

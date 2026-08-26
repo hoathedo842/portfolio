@@ -31,7 +31,7 @@
 .navbar-custom .dropdown-item:hover {
   background-color: var(--sidebar-hover);
 }
-/* Avatar */
+
 .account-menu {
   right: 0;
   top: 100%;
@@ -159,4 +159,20 @@
 .user-table .table td,
 .user-table .table th {
   vertical-align: middle;
+}
+
+/* Table alignment adjustments */
+.table td,
+.table th {
+  vertical-align: middle;
+}
+
+/* Modal styling safety adjustments */
+#deleteConfirmModal .modal-header.bg-danger {
+  background-color: #dc3545 !important;
+  color: #fff !important;
+}
+
+#deleteConfirmModal .btn-close-white {
+  filter: invert(1) grayscale(100%) brightness(200%);
 }

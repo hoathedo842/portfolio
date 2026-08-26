@@ -1,0 +1,22 @@
+/* Focus state for form inputs and textareas in portfolio form */
+.form-control:focus {
+  border-color: var(--sidebar-active, #40916c);
+  box-shadow: 0 0 0 0.25rem rgba(64, 145, 108, 0.15);
+}
+
+/* Card header styling inside portfolio forms */
+#portfolioFormCard .card-header {
+  background-color: #212529;
+  color: #ffffff;
+}
+
+/* Styling adjustments for dynamically added skill and social items */
+.skill-item .card,
+.social-item .card {
+  transition: transform 0.2s ease-in-out;
+}
+
+.skill-item .card:hover,
+.social-item .card:hover {
+  transform: translateY(-2px);
+}

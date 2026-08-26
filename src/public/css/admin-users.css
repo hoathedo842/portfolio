@@ -1,69 +1,30 @@
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  scroll-behavior: smooth;
-  background-color: #f8fff4;
-  color: #1b4332;
-}
-/* Navbar Custom */
-.custom-navbar {
-  background-color: #198754 !important;
+/* Header styling for user table elements */
+.user-table .card-header,
+.user-table .table th {
+  background-color: var(--sidebar-hover);
+  font-weight: bold;
+  color: var(--text-color);
 }
 
-.custom-navbar .navbar-brand,
-.custom-navbar .text-white {
+/* Vertical alignment for table cells */
+.user-table .table td,
+.user-table .table th {
+  vertical-align: middle;
+}
+
+/* Focus state for form inputs and selects in user modals */
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--sidebar-active);
+  box-shadow: 0 0 0 0.25rem rgba(64, 145, 108, 0.15);
+}
+
+/* Custom danger theme for the delete confirmation modal */
+#deleteConfirmModal .modal-header.bg-danger {
+  background-color: #dc3545 !important;
   color: #fff !important;
 }
 
-.custom-navbar .btn-outline-light {
-  border-color: #fff;
-  color: #fff;
-}
-
-.custom-navbar .btn-outline-light:hover {
-  background-color: #fff;
-  color: #198754;
-}
-
-/* Sidebar Custom */
-.custom-sidebar {
-  background-color: #1c6643;
-  min-height: 100vh;
-}
-
-.custom-sidebar .nav-link {
-  color: #d4edda;
-}
-
-.custom-sidebar .nav-link:hover {
-  background-color: #198754;
-  color: #fff;
-}
-
-/* Cards Custom */
-.custom-card .card-title {
-  color: #146c43;
-}
-
-.custom-card .fs-4.fw-bold.text-primary {
-  color: #198754 !important;
-}
-
-.custom-card .fs-4.fw-bold.text-success {
-  color: #28a745 !important;
-}
-
-.custom-card .fs-4.fw-bold.text-warning {
-  color: #ffc107 !important;
-}
-
-/* Chart Card Header */
-.custom-card .card-header {
-  background-color: #198754;
-  color: #fff;
-}
-
-/* Table Header */
-.custom-table thead {
-  background-color: #198754;
-  color: #fff;
+#deleteConfirmModal .btn-close-white {
+  filter: invert(1) grayscale(100%) brightness(200%);
 }
